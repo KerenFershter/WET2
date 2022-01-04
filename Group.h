@@ -4,6 +4,7 @@
 
 #ifndef WET2_GROUP_H
 #define WET2_GROUP_H
+
 #include <exception>
 #include <iostream>
 #include <memory>
