@@ -54,7 +54,7 @@ public:
         std::shared_ptr<_Node> tail;
 
    // public:
-        friend std::ostream &operator<<(std::ostream &os, const List<T> &list);
+//        friend std::ostream &operator<<(std::ostream &os, const List<T> &list);
         List():size(0),head(nullptr),tail(nullptr){
         }
 

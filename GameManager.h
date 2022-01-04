@@ -22,6 +22,7 @@ public:
         return "score didn't changed";
     }
 };
+
 class GameManager {
     typedef shared_ptr<Player> ptr_player;
     typedef shared_ptr<Group> ptr_group;

@@ -141,5 +141,73 @@ int main() {
     //delete group;
     delete gm;
 
+
+
+    auto t = new AVLTree<int,int>();
+    t->insert(4, 1);
+    t->insert(3, 0);
+    t->insert(2, 1);
+    t->insert(1, 0);
+    t->insert(0, 1);
+
+    t->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+    t->insert(5, 0);
+
+    t->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+    t->insert(6, 1);
+    t->insert(60, 0);
+    t->insert(600, 1);
+
+    t->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+//    t->remove(3);
+//    t->remove(4);
+    t->remove(0);
+    t->remove(3);
+    t->remove(4);
+
+    t->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+
+
+    auto t2 = new AVLTree<int,int>();
+    t2->insert(40, 8);
+    t2->insert(30, 9);
+    t2->insert(20, 8);
+    t2->insert(10, 9);
+    t2->insert(-10, 8);
+
+    t2->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+
+    t->merge(*t2);
+
+    t->print(true, true);
+    cout << "----------------------------------------------------------------" << endl;
+
+    for(int r = 1; r <= t->getSize(); r++){
+        int rk = t->select(r);
+        int rks = t->rank(rk);
+
+        if(r == rks){
+            cout << "rank(select(" << r << ")) = rank(" << rk << ") = " << rks << endl;
+        }
+    }
+
+    cout << t->find(5) << endl;
+    cout << t->find(60) << endl;
+    cout << t->find(600) << endl;
+    cout << t->find(20) << endl;
+
+    delete t;
+    delete t2;
+
     return 0;
 }
