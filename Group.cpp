@@ -6,11 +6,12 @@
 ////avl with key player, dynamic array with id
 
 Group::Group(int id, int scale):id(id),scale(scale),num_level_0(0){
-   hist_scores=new int[scale+1];//TODO: check if need to do scale+1
-   hist_scores_0=new int[scale+1];
-   for(int i=0;i<scale+1;i++){
-       hist_scores_0[i]=0;
-       hist_scores[i]=0;
+   hist_scores = new int[scale + 1];//TODO: check if need to do scale+1
+   hist_scores_0 = new int[scale + 1];
+
+   for(int i = 0; i < scale + 1; i++){
+       hist_scores_0[i] = 0;
+       hist_scores[i] = 0;
    }
 }
 
@@ -84,6 +85,21 @@ void Group::changePlayerScore(Group::ptr_player player, int new_score) {
         //tmp->changeScore(new_score);
 }
 
+void Group::merge(Group& other){
+    for(int i = 1; i <= this->scale; i++){
+        this->hist_scores[i] += other.hist_scores[i];
+        this->hist_scores_0[i] += other.hist_scores_0[i];
+    }
+
+    this->num_level_0 += other.num_level_0;
+
+    other.players_level_0.apply(Group::_give_id, (void*)(this->id));
+
+    this->players_level_0.merge(other.players_level_0);
+    this->players.merge(other.players);
+}
+
+
 std::ostream &operator<<(ostream &os, const Group &group) {
     os<<"Group Id:"<<group.id<<endl;
     os<<"his_0: by num of players_0: "<<group.num_level_0<<endl;
@@ -103,8 +119,8 @@ std::ostream &operator<<(ostream &os, const Group &group) {
 
 }
 
-
-
-
+void Group::_give_id(Group::ptr_player& player, void* new_id) {
+    Player::setGroup(*player, (int)(unsigned long)new_id);
+}
 
 

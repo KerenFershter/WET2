@@ -29,6 +29,7 @@ public:
 
 class Group {
     typedef shared_ptr<Player> ptr_player;
+
     int id;
     int scale;
     int * hist_scores;
@@ -37,14 +38,20 @@ class Group {
     DynamicArray<ptr_player> players_level_0;
     AVLTree<keyPlayer,ptr_player> players;
 
-    public:
+
+    static void _give_id(ptr_player& player, void* new_id);
+
+public:
     Group(int id,int scale);
     ~Group();
     void addPlayer(ptr_player & player);
     void removePlayer( ptr_player & player);
     bool playerExist( ptr_player & player);
     void increasePlayerLevel(ptr_player player,int level_increase);
-    void changePlayerScore(ptr_player player,int new_score);
+    void changePlayerScore(ptr_player player, int new_score);
+
+    void merge(Group& other);
+
     friend std::ostream& operator<<(std::ostream& os, const Group& group);
 
 

@@ -476,7 +476,11 @@ public:
 
     AVLTree(const _node_ptr& root) : root(root), size(root->size){}
 
-    ~AVLTree() {
+    ~AVLTree(){
+        this->clean();
+    }
+
+    void clean(){
         if(this->size)
             AVLTree<K,T>::_clean(this->root);
     }
