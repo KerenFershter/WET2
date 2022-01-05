@@ -58,23 +58,26 @@ class UnionFind {
     int find(int key);
     int Union(int p,int q);
     T& getKeyData(int key);
+    int getSizeByKey(int key);
 
-   // friend std::ostream& operator<<(std::ostream& os,const UnionFind<T>& uf);
+        // friend std::ostream& operator<<(std::ostream& os,const UnionFind<T>& uf);
 };
     template <class T>
     UnionFind<T>::UnionFind(int size):size(size){
-        if(size<=0){
+        if(size <= 0){
             throw IllegalSize();
         }
-        parents= new int[size];
-        sizes= new int[size];
-        arr= new T[size];
-        counter=0;
-        for(int i=0;i<size;i++){
-            sizes[i]=0;
-            parents[i]=DEFAULT;
+
+        parents = new int[size];
+        sizes = new int[size];
+        arr = new T[size];
+        counter = 0;
+        for(int i = 0; i < size; i++){
+            sizes[i] = 0;
+            parents[i] = DEFAULT;
         }
     }
+
     template <class T>
     UnionFind<T>::~UnionFind(){
         delete [] parents;
@@ -88,68 +91,77 @@ class UnionFind {
             throw ToManySets();
         }
        // arr[counter]=std::shared_ptr<T>(data);
-        arr[key]=data;
-        sizes[key]=1;
+        arr[key] = data;
+        sizes[key] = 1;
         counter++;
         return key;
     }
 
     template <class T>
     int UnionFind<T>:: find(int key){
-        if(key<0 || key>=size){
+        if(key < 0 || key >= size){
             throw IllegalKey();
         }
-        if(sizes[key]==0){
+        if(sizes[key] == 0){
             throw NoSuchKey();
         }
-        int group=key;
-        int parent=parents[key];
-        while(parent!=DEFAULT){
-            group=parent;
-            parent=parents[parent];
+
+        int group = key;
+        int parent = parents[key];
+        while(parent != DEFAULT){
+            group = parent;
+            parent = parents[parent];
         }
 
-        int tmp=key;
-        int next=parents[tmp];
-        while(next!=DEFAULT){
-            parents[tmp]=group;
-            tmp=next;
-            next=parents[next];
+        int tmp = key;
+        int next = parents[tmp];
+        while(next != DEFAULT){
+            parents[tmp] = group;
+            tmp = next;
+            next = parents[next];
         }
 
         return group;
     }
 
     template <class T>
-    int UnionFind<T>::Union(int p,int q){
-        if(p<0 || p>=size || q<0 || q>=size){
+    int UnionFind<T>::Union(int p, int q){
+        if(p < 0 || p >= size || q < 0 || q >= size){
             throw IllegalKey();
         }
-        if(sizes[p]==0 || sizes[q]==0){
+        if(sizes[p] == 0 || sizes[q] == 0){
             throw NoSuchKey();
         }
-        if(q==p){
+        if(q == p){
             return p;
         }
 
-        if(sizes[p]<sizes[q]){
-            parents[p]=q;
-            sizes[q]+=sizes[p];
-            sizes[p]=DEFAULT;//there is no more size after union, default -1
+        if(sizes[p] < sizes[q]){
+            parents[p] = q;
+            sizes[q] += sizes[p];
+            sizes[p] = DEFAULT;//there is no more size after union, default -1
             return q;
         }
-        parents[q]=p;
-        sizes[p]+=sizes[q];
-        sizes[q]=DEFAULT;//there is no more size after union, default -1
+        parents[q] = p;
+        sizes[p] += sizes[q];
+        sizes[q] = DEFAULT;//there is no more size after union, default -1
         return p;
     }
 
 template<class T>
-T &UnionFind<T>::getKeyData(int key) {
-    if(key<0 || key>=size){
+T& UnionFind<T>::getKeyData(int key) {
+    if(key < 0 || key >= size){
         throw IllegalKey();
     }
-    return arr[key];
+
+    int head_key = this->find(key);
+    return arr[head_key];
+}
+
+template<class T>
+int UnionFind<T>::getSizeByKey(int key){
+    int head_key = this->find(key);
+    return this->sizes[head_key];
 }
 
 

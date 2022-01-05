@@ -6,14 +6,17 @@
 #define DEFAULT 1
 
 GameManager::GameManager(int k, int scale):scale(scale),k(k),num_level_0(0) {
-    hist_scores=new int[scale+1];//TODO: check if need to do scale+1
-    hist_scores_0=new int[scale+1];
-    for(int i=0;i<scale+1;i++){
-        hist_scores_0[i]=0;
-        hist_scores[i]=0;
+    hist_scores = new int[scale+1];//TODO: check if need to do scale+1
+    hist_scores_0 = new int[scale+1];
+
+    for(int i = 0; i < scale + 1; i++){
+        hist_scores_0[i] = 0;
+        hist_scores[i] = 0;
     }
+
     groups = new  UnionFind<shared_ptr<Group>>(k+1);
-    for(int i=1;i<k+1;i++){
+
+    for(int i = 1; i < k + 1; i++){
         groups->MakeSet(i,shared_ptr<Group>(new Group(i,scale)));
     }
 }
@@ -25,10 +28,21 @@ GameManager::~GameManager() {
 }
 
 StatusType GameManager::mergeGroups(int GroupID1, int GroupID2) {
-        if(GroupID1<=0 || GroupID1>k || GroupID2<=0 || GroupID2>k){
+        if(GroupID1 <= 0 || GroupID1 > k || GroupID2 <= 0 || GroupID2 > k){
             return INVALID_INPUT;
         }
-        groups->Union(GroupID1,GroupID2);//TODO:merge between players group & change players id group
+
+        ptr_group g1 = groups->getKeyData(GroupID1);
+        ptr_group g2 = groups->getKeyData(GroupID2);
+
+        if(groups->getSizeByKey(GroupID1) > groups->getSizeByKey(GroupID2)){
+            g1->merge(*g2);
+        }
+        else {
+            g2->merge(*g1);
+        }
+
+        groups->Union(GroupID1, GroupID2);//TODO:merge between players group & change players id group
         return SUCCESS;
 }
 

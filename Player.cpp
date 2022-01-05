@@ -62,4 +62,12 @@ int Player::getGroup() const {
     return group;
 }
 
+void Player::setGroup(int new_group_id){
+    this->group = new_group_id;
+}
+
+void Player::setGroup(Player &player, int new_group_id) {
+    player.setGroup(new_group_id);
+}
+
 
