@@ -22,20 +22,21 @@ public:
         return "score didn't changed";
     }
 };
-
 class GameManager {
     typedef shared_ptr<Player> ptr_player;
     typedef shared_ptr<Group> ptr_group;
     int k;
     int scale;
+    int max_id;
     int * hist_scores;
     int * hist_scores_0;
     int num_level_0;
-    DynamicArray<ptr_player> players_level_0;
-    AVLTree<keyPlayer,ptr_player> players;
+    DynamicArray<ptr_player> all_players;
+    AVLTree<keyPlayerLevel,ptr_player> players_by_level;
+    AVLTree<keyPlayerScore,ptr_player> players_by_score;
     UnionFind<ptr_group> * groups;
 
-    public:
+public:
     GameManager(int k,int scale);
     ~GameManager();
     //void* init(int k,int scale);
@@ -46,9 +47,9 @@ class GameManager {
     bool playerExist(int player_id);
     StatusType increasePlayerIDLevel(int PlayerID, int LevelIncrease);
     StatusType changePlayerIDScore( int PlayerID, int NewScore);
-
-    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
-
+//    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
+    StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score,
+                                                    int lowerLevel, int higherLevel, double * players);
     friend std::ostream& operator<<(std::ostream& os, const GameManager& game_manager);
 
 };

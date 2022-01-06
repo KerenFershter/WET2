@@ -164,7 +164,8 @@ double int_to_double(int n){
 }
 
 int main(){
-    auto t = new AVLTree<int,int>(int_to_double);
+//    auto t = new AVLTree<int,int>(int_to_double);
+    auto t = new AVLTree<int,int>();
     t->insert(4, 1);
     t->insert(3, 0);
     t->insert(2, 1);
@@ -197,7 +198,8 @@ int main(){
 
 
 
-    auto t2 = new AVLTree<int,int>(int_to_double);
+//    auto t2 = new AVLTree<int,int>(int_to_double);
+    auto t2 = new AVLTree<int,int>();
     t2->insert(40, 8);
     t2->insert(30, 9);
     t2->insert(20, 8);
