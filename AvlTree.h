@@ -60,8 +60,16 @@ struct TNode {
     double sum;
 
 
-    template <typename F>
     TNode(const K& key, T data) :
+        key(key),
+        data(data),
+        left(nullptr),
+        right(nullptr),
+        height(0),
+        size(1),
+        sum(0){}
+
+    TNode(const K& key, const T& data) :
         key(key),
         data(data),
         left(nullptr),
@@ -90,6 +98,10 @@ private:
     int size;
     std::function<double(T&)> to_double;
 
+
+    double to_delete_default(T& data){
+        return 0;
+    }
 
     static const _node_ptr& _find(const _node_ptr& root, const K& key){
         if(root == nullptr || key == root->key){
@@ -528,8 +540,13 @@ private:
 
 public:
 
+    AVLTree() :
+        root(nullptr),
+        size(0),
+        to_double(to_delete_default){}
+
     template <typename F>
-    AVLTree(F to_double=nullptr) :
+    AVLTree(F to_double) :
         root(nullptr),
         size(0),
         to_double(to_double){}
@@ -573,7 +590,7 @@ public:
             throw KeyNotExist();
         }
 
-        AVLTree<K,T>::_remove(this->root, key);
+        AVLTree<K,T>::_remove(this->root, key, this->to_double);
         this->size--;
     }
 

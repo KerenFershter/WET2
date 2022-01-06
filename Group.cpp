@@ -3,9 +3,13 @@
 //
 
 #include "Group.h"
-////avl with key player, dynamic array with id
 
-Group::Group(int id, int scale):id(id),scale(scale),num_level_0(0){
+double _player_ptr_to_double(shared_ptr<Player>& player_ptr){
+    return (double)(*player_ptr);
+}
+
+////avl with key player, dynamic array with id
+Group::Group(int id, int scale) : id(id), scale(scale), num_level_0(0){
    hist_scores = new int[scale + 1];//TODO: check if need to do scale+1
    hist_scores_0 = new int[scale + 1];
 
@@ -13,6 +17,8 @@ Group::Group(int id, int scale):id(id),scale(scale),num_level_0(0){
        hist_scores_0[i] = 0;
        hist_scores[i] = 0;
    }
+
+//   this->players = new AVLTree<keyPlayer,ptr_player>(_player_ptr_to_double);
 }
 
 Group::~Group() {

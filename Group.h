@@ -42,7 +42,7 @@ class Group {
     static void _give_id(ptr_player& player, void* new_id);
 
 public:
-    Group(int id,int scale);
+    Group(int id, int scale);
     ~Group();
     void addPlayer(ptr_player & player);
     void removePlayer( ptr_player & player);

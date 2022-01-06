@@ -36,10 +36,12 @@ bool Player::operator==(const Player &other) const {
 Player &Player::operator=(const Player &other) {
     this->key=other.key;
     this->score=other.score;
+    return *this;
 }
 
  std::ostream& operator<<(std::ostream& os, const Player& player){
     os<<"player id="<<player.key.id<<", player level="<<player.key.level<<", player score="<<player.score<<endl;
+    return os;
 }
 
 int Player::getId() const {
@@ -70,5 +72,12 @@ void Player::setGroup(Player &player, int new_group_id) {
     player.setGroup(new_group_id);
 }
 
+Player::operator int() const{
+    return this->getLevel();
+}
+
+Player::operator double() const{
+    return (double)(this->getLevel());
+}
 
 

@@ -76,6 +76,8 @@ class Player{
     keyPlayer& getKey();
     void setGroup(int new_group_id);
     static void setGroup(Player& player, int new_group_id);
+    operator int() const;
+    operator double() const;
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
 
