@@ -37,16 +37,20 @@ class Group {
     AVLTree<keyPlayerLevel,ptr_player> players_by_level;
     AVLTree<keyPlayerScore,ptr_player> players_by_score;
 
+    static void _give_id(ptr_player& player, void* new_id);
+
 public:
-    Group(int id,int scale);
+    Group(int id, int scale);
     ~Group();
     void addPlayer(ptr_player & player);
     void removePlayer( ptr_player & player);
     bool playerExist( ptr_player & player);
-    void onIncreasePlayerLevel(ptr_player player,int level_increase);
-    void onChangePlayerScore(ptr_player player,int new_score);
-    void getPercentOfPlayersWithScoreInBounds (
-            int max_id,int score, int lowerLevel, int higherLevel, double * players);
+    void onIncreasePlayerLevel(ptr_player player, int level_increase);
+    void onChangePlayerScore(ptr_player player, int new_score);
+    void getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel, double* players);
+    void merge(Group& other);
+    int getSize();
+
     friend std::ostream& operator<<(std::ostream& os, const Group& group);
 
 

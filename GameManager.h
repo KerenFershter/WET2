@@ -47,8 +47,9 @@ public:
     bool playerExist(int player_id);
     StatusType increasePlayerIDLevel(int PlayerID, int LevelIncrease);
     StatusType changePlayerIDScore( int PlayerID, int NewScore);
-    StatusType getPercentOfPlayersWithScoreInBounds (
-            int GroupID, int score, int lowerLevel, int higherLevel, double * players);
+//    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
+    StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score,
+                                                    int lowerLevel, int higherLevel, double * players);
     friend std::ostream& operator<<(std::ostream& os, const GameManager& game_manager);
 
 };

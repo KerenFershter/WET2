@@ -4,11 +4,13 @@
 
 #ifndef DYNAMICARRAY_H
 #define DYNAMICARRAY_H
+
 #include <memory>
 #include <exception>
 #include <iostream>
+
 #define MIN_SIZE 10
-#define DEFAULT -1
+#define DEFAULT_KEY -1
 #define OM 2
 
 using namespace std;
@@ -31,18 +33,23 @@ struct Node {
 
     Node() = default;
 
-    Node(int key, T& data):
-            key(key), data(data), prev(nullptr), next(nullptr){
-    }
-    Node(const Node& other) : key(other.key), data(data.info), prev(other.prev), next(other.next) { }
+    Node(int key, T& data): key(key), data(data), prev(nullptr), next(nullptr){}
 
-
+    Node(const Node& other) : key(other.key), data(data.info), prev(other.prev), next(other.next){}
 };
 
 
 ///////////////////////////////////////////
 // class List
 ///////////////////////////////////////////
+
+
+class EmptyList : public std::exception {
+public:
+    virtual const char* what() const noexcept override {
+        return "cant get data of element in empty list";
+    }
+};
 
 template<class T>
 class List {
@@ -56,8 +63,7 @@ public: //TODO: private
 
 //public:
 //    friend std::ostream &operator<<(std::ostream &os, const List<T> &list);
-    List():size(0),head(nullptr),tail(nullptr)
-    {}
+    List() : size(0), head(nullptr), tail(nullptr){}
 
     void push(int key, T& data){
         std::shared_ptr<_Node> new_node (new Node<T>(key, data));
@@ -74,10 +80,10 @@ public: //TODO: private
     }
 
     void pop(){
-        if(size>1){
+        if(size > 1){
             tail = tail->prev;
             tail->next.reset();
-            this->tail->next= nullptr;
+            this->tail->next = nullptr;
             this->size--;
         } else{
             tail.reset();
@@ -95,7 +101,7 @@ public: //TODO: private
         clean();
     }
 
-    T& find(int key){//TODO: assert done exist before
+    T& find(int key){ //TODO: assert done exist before
         std::shared_ptr<_Node> iter = head;
         while(iter != nullptr){
             if(iter->key == key){
@@ -121,13 +127,14 @@ public: //TODO: private
         if(tail){
             return tail->key;
         }
-        return DEFAULT;
+        return DEFAULT_KEY;
     }
 
     T& getLastData(){
-        if(tail){
-            return tail->data;
+        if(!tail){
+            throw EmptyList();
         }
+        return tail->data;
     }
 
     void remove(int key,bool * removed){
@@ -143,38 +150,38 @@ public: //TODO: private
 
         while(iter != nullptr){
             if(iter->key == key){
-                if(iter->prev== nullptr && iter->next== nullptr){//only one item
-                    head= nullptr;
-                    tail= nullptr;
+                if(iter->prev == nullptr && iter->next == nullptr){//only one item
+                    head = nullptr;
+                    tail = nullptr;
                 }
 
-                if(iter->next!= nullptr && iter->prev== nullptr){//removes head
-                    head=iter->next;
+                if(iter->next != nullptr && iter->prev == nullptr){//removes head
+                    head = iter->next;
                 }
 
 //                if(iter->prev!= nullptr){
 //                    iter->prev->next=iter->next;
 //                }
 
-                if(iter->next==nullptr && iter->prev!= nullptr){//tail
-                    iter->prev->next= nullptr;
+                if(iter->next == nullptr && iter->prev != nullptr){//tail
+                    iter->prev->next = nullptr;
                 }
 
-                if(iter->next!= nullptr && iter->prev!= nullptr){//not head or tail
-                    iter->prev->next=iter->next;
-                    iter->next->prev=iter->prev;
+                if(iter->next != nullptr && iter->prev != nullptr){//not head or tail
+                    iter->prev->next = iter->next;
+                    iter->next->prev = iter->prev;
                 }
 
-                iter= nullptr;
+                iter = nullptr;
                 size--;
-                *removed=true;
+                *removed = true;
                 return;
             }
 
             iter = iter->next;
         }
 
-        *removed=false;
+        *removed = false;
     }
 
     int getSize(){
@@ -215,6 +222,7 @@ public: //TODO: private
 template<class T>
 class DynamicArray {
     typedef List<T> _List;
+
 public: //TODO private
     int size;
     _List *A;
@@ -249,8 +257,8 @@ public: //TODO private
     bool exists(int key);
     T& find(int key);
     void resize(float factor = 2.);
-
     void merge(DynamicArray<T>& other);
+    int getCount();
 
     template<typename P>
     void apply(P pred, void* arg){
@@ -313,12 +321,12 @@ void DynamicArray<T>::insert(int key, T val){
 
 template<class T>
 void DynamicArray<T>::remove(int key) {
-    bool removed=false;
-    A[key%size].remove(key,&removed);
+    bool removed = false;
+    A[key % size].remove(key, &removed);
     if(removed){
         counter--;
     }
-    if (counter<=size/OM){
+    if (counter <= size / OM){
        // float new_size=1/OM;
         resize(0.5);
     }
@@ -346,7 +354,7 @@ void DynamicArray<T>::resize(float factor){
     }
 
     _List* tmp = A;
-    int tmp_size=size;
+    int tmp_size = size;
     A = new _List[new_size];
     this->size = new_size;
 //    delete[] this->B;
@@ -355,12 +363,12 @@ void DynamicArray<T>::resize(float factor){
 //    this->C = new int[new_size];
     int tmpKey;
     T tmpData;
-    counter=0;
+    counter = 0;
     for(int i = 0; i < tmp_size; i++) {
         while(tmp[i].getSize()){
-            tmpKey=tmp[i].getLastKey();
-            tmpData=tmp[i].getLastData();
-            this->insert(tmpKey,tmpData);
+            tmpKey = tmp[i].getLastKey();
+            tmpData = tmp[i].getLastData();
+            this->insert(tmpKey, tmpData);
             tmp[i].pop();
         }
     }
@@ -380,6 +388,11 @@ void DynamicArray<T>::merge(DynamicArray<T>& other){
     }
 
     other.clean();
+}
+
+template<class T>
+int DynamicArray<T>::getCount() {
+    return this->counter;
 }
 
 
