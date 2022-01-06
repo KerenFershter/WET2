@@ -5,69 +5,68 @@
 
 using namespace std;
 
-Player::Player(int id,int score,int group,int level):score(score),key(id,level),group(group){};
+Player::Player(int id,int score,int group,int level):key_level(id,level),key_score(id,score,level),group(group){};
 
 Player::Player(const Player & other):
-key(other.key),score(other.score){};
+        key_level(other.key_level),key_score(other.key_score),group(other.group){};
 
 bool Player::operator<(const Player &other) const{
-    return key<other.key;
+    return key_level.id<other.key_level.id;
 }
 bool Player::operator>(const Player &other) const{
-    return key>other.key;
+    return key_level.id>other.key_level.id;
 }
 
 void Player::increaseLevel(int add_level) {
-    this->key.level+=add_level;
+    this->key_level.level+=add_level;
+    this->key_score.level+=add_level;
 }
 
 void Player::decreaseLevel(int level) {
-    this->key.level-=level;
+    this->key_level.level-=level;
+    this->key_score.level-=level;
 }
 
 void Player::changeScore(int new_score) {
-    this->score=new_score;
+    this->key_score.score=new_score;
 }
 
 bool Player::operator==(const Player &other) const {
-    return key==other.key;
+    return key_level.id==other.key_level.id;
 }
 
 Player &Player::operator=(const Player &other) {
-    this->key=other.key;
-    this->score=other.score;
+    this->key_level=other.key_level;
+    this->key_score=other.key_score;
+    this->group=other.group;
 }
 
- std::ostream& operator<<(std::ostream& os, const Player& player){
-    os<<"player id="<<player.key.id<<", player level="<<player.key.level<<", player score="<<player.score<<endl;
+std::ostream& operator<<(std::ostream& os, const Player& player){
+    os<<"player id="<<player.key_score.id<<", player level="<<player.key_score.level<<", player score="<<player.key_score.score<<endl;
 }
 
 int Player::getId() const {
-    return key.id;
+    return key_level.id;
 }
 
 int Player::getLevel() const {
-    return key.level;
+    return key_level.level;
 }
 
 int Player::getScore() const {
-    return score;
+    return key_score.score;
 }
 
-keyPlayer &Player::getKey() {
-    return key;
+keyPlayerLevel &Player::getKeyLevel() {
+    return key_level;
 }
 
 int Player::getGroup() const {
     return group;
 }
 
-void Player::setGroup(int new_group_id){
-    this->group = new_group_id;
-}
-
-void Player::setGroup(Player &player, int new_group_id) {
-    player.setGroup(new_group_id);
+keyPlayerScore &Player::getKeyScore() {
+    return key_score;
 }
 
 
