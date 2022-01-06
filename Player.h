@@ -9,62 +9,94 @@
 
 using  namespace std;
 
-struct keyPlayer{
+struct keyPlayerLevel{
     int id;
     int level;
-
-    keyPlayer(int id,int level):id(id),level(level){};
-    ~keyPlayer()=default;
-    keyPlayer(const keyPlayer & other)=default;
-    keyPlayer& operator=(const keyPlayer &other)=default;
-
-    bool operator<(const keyPlayer &other)const{
-        if(level == other.level){
-            return id < other.id;
+    keyPlayerLevel(int id,int level):id(id),level(level){};
+    ~keyPlayerLevel()=default;
+    keyPlayerLevel(const keyPlayerLevel & other)=default;
+    keyPlayerLevel& operator=(const keyPlayerLevel &other)=default;
+    bool operator<(const keyPlayerLevel &other)const{
+        if(level==other.level){
+            return id<other.id;
         }
-        return level < other.level;
-    }
-
-    bool operator>(const keyPlayer &other)const{
-        if(level == other.level){
-            return id > other.id;
+        if(level<other.level){
+            return true;
         }
-        return level > other.level;
+        return false;
     }
+    bool operator>(const keyPlayerLevel &other)const{
+        if(level==other.level){
+            return id>other.id;
+        }
+        if(level>other.level){
+            return true;
+        }
+        return false;
+    };
+    bool operator==(const keyPlayerLevel &other)const{
+        return id==other.id;
+    };
 
-    bool operator==(const keyPlayer &other)const{
-        return id == other.id;
+};
+struct keyPlayerScore{
+    int id;
+    int level;
+    int score;
+    keyPlayerScore(int id,int score,int level):id(id),score(score),level(level){};
+    ~keyPlayerScore()=default;
+    keyPlayerScore(const keyPlayerScore & other)=default;
+    keyPlayerScore& operator=(const keyPlayerScore &other)=default;
+    bool operator<(const keyPlayerScore &other)const{
+        if(score==other.score){
+            if(level==other.level){
+                return id<other.id;
+            }
+            if(level<other.level){
+                return true;
+            }
+            return false;
+        }
+        if(score<other.score){
+            return true;
+        }
+        return false;
     }
-
-    bool operator<=(const keyPlayer &other)const{
-//        return this->operator<(other) || this->operator==(other);
-        return *this < other || *this == other;
-    }
-
-    bool operator>=(const keyPlayer &other)const{
-//        return this->operator>(other) || this->operator==(other);
-        return *this > other || *this == other;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const keyPlayer& player){
-        os << "id:" << player.id << "|lvl:" << player.level;
-        return os;
-    }
+    bool operator>(const keyPlayerScore &other)const{
+        if(score==other.score){
+            if(level==other.level){
+                return id>other.id;
+            }
+            if(level>other.level){
+                return true;
+            }
+            return false;
+        }
+        if(score>other.score){
+            return true;
+        }
+        return false;
+    };
+    bool operator==(const keyPlayerScore &other)const{
+        return id==other.id;
+    };
 
 };
 
+
+
 class Player{
-    keyPlayer key;
-    int score;
+    keyPlayerLevel key_level;
+    keyPlayerScore key_score;
     int group;
 
-    public:
+public:
     Player(int id,int score,int group,int level=0);
     Player(const Player & other);
-    ~Player()=default;
     void increaseLevel(int add_level);
     void decreaseLevel(int level);
     void changeScore(int new_score);
+    ~Player()=default;
     bool operator<(const Player &other)const;
     bool operator>(const Player &other)const;
     bool operator==(const Player &other)const;
@@ -73,9 +105,8 @@ class Player{
     int getLevel()const;
     int getScore()const;
     int getGroup()const;
-    keyPlayer& getKey();
-    void setGroup(int new_group_id);
-    static void setGroup(Player& player, int new_group_id);
+    keyPlayerLevel& getKeyLevel();
+    keyPlayerScore& getKeyScore();
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
 
