@@ -142,6 +142,27 @@ StatusType GameManager::changePlayerIDScore(int PlayerID, int NewScore) {
     return SUCCESS;
 }
 
+//StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel){
+//    if(groupID < 0 || groupID > this->k || m <= 0 || !avgLevel){
+//        return INVALID_INPUT;
+//    }
+//
+//    if(groupID == 0){
+//        if(m > this->players_level_0.getCount()){
+//            return FAILURE;
+//        }
+//
+//
+//    }
+//    else {
+//        ptr_group group = this->groups->getKeyData(groupID);
+//        if(m > group->getSize()){
+//            return FAILURE;
+//        }
+//
+//    }
+//}
+
 std::ostream &operator<<(ostream &os, const GameManager &game_manager) {
     os<<"groups arr:"<<endl;
     for(int i=1;i<=game_manager.k;i++){

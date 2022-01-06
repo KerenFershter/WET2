@@ -46,6 +46,9 @@ class GameManager {
     bool playerExist(int player_id);
     StatusType increasePlayerIDLevel(int PlayerID, int LevelIncrease);
     StatusType changePlayerIDScore( int PlayerID, int NewScore);
+
+    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
+
     friend std::ostream& operator<<(std::ostream& os, const GameManager& game_manager);
 
 };

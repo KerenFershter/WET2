@@ -249,8 +249,8 @@ public: //TODO private
     bool exists(int key);
     T& find(int key);
     void resize(float factor = 2.);
-
     void merge(DynamicArray<T>& other);
+    int getCount();
 
     template<typename P>
     void apply(P pred, void* arg){
@@ -318,7 +318,7 @@ void DynamicArray<T>::remove(int key) {
     if(removed){
         counter--;
     }
-    if (counter<=size/OM){
+    if (counter <= size / OM){
        // float new_size=1/OM;
         resize(0.5);
     }
@@ -355,12 +355,12 @@ void DynamicArray<T>::resize(float factor){
 //    this->C = new int[new_size];
     int tmpKey;
     T tmpData;
-    counter=0;
+    counter = 0;
     for(int i = 0; i < tmp_size; i++) {
         while(tmp[i].getSize()){
-            tmpKey=tmp[i].getLastKey();
-            tmpData=tmp[i].getLastData();
-            this->insert(tmpKey,tmpData);
+            tmpKey = tmp[i].getLastKey();
+            tmpData = tmp[i].getLastData();
+            this->insert(tmpKey, tmpData);
             tmp[i].pop();
         }
     }
@@ -380,6 +380,11 @@ void DynamicArray<T>::merge(DynamicArray<T>& other){
     }
 
     other.clean();
+}
+
+template<class T>
+int DynamicArray<T>::getCount() {
+    return this->counter;
 }
 
 

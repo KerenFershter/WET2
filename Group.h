@@ -49,8 +49,8 @@ public:
     bool playerExist( ptr_player & player);
     void increasePlayerLevel(ptr_player player,int level_increase);
     void changePlayerScore(ptr_player player, int new_score);
-
     void merge(Group& other);
+    int getSize();
 
     friend std::ostream& operator<<(std::ostream& os, const Group& group);
 

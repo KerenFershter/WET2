@@ -123,4 +123,8 @@ void Group::_give_id(Group::ptr_player& player, void* new_id) {
     Player::setGroup(*player, (int)(unsigned long)new_id);
 }
 
+int Group::getSize() {
+    return this->players_level_0.getCount();
+}
+
 
