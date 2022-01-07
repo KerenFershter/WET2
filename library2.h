@@ -2,8 +2,8 @@
 // Created by keren on 03/01/2022.
 //
 
-#ifndef WET2_LIBRARY_H
-#define WET2_LIBRARY_H
+#ifndef WET2_LIBRARY2_H
+#define WET2_LIBRARY2_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,4 +45,4 @@ void Quit(void** DS);
 }
 #endif
 
-#endif //WET2_LIBRARY_H
+#endif //WET2_LIBRARY2_H

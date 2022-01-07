@@ -129,6 +129,10 @@ void Group::getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowe
         range_score += hist_scores_0[score];
         range_level += num_level_0;
     }
+    if(range_level==0){
+        *players=0;
+        return;
+    }
     *players = (double)(range_score * 100) / (double)range_level;//TODO: in utils func percent
 }
 
