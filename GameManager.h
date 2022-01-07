@@ -8,7 +8,7 @@
 #include "Group.h"
 #include "iostream"
 #include "UnionFind.h"
-#include "library.h"
+#include "library2.h"
 
 class LevelNotChanged : public std::exception {
 public:
@@ -41,7 +41,6 @@ public:
     ~GameManager();
     //void* init(int k,int scale);
     StatusType mergeGroups(int GroupID1, int GroupID2);//TODO:merge between the players
-
     StatusType addPlayer(int PlayerID, int GroupID, int score);
     StatusType removePlayer( int PlayerID);
     bool playerExist(int player_id);

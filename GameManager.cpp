@@ -180,7 +180,11 @@ StatusType GameManager::getPercentOfPlayersWithScoreInBounds(int GroupID, int sc
         range_score += hist_scores_0[score];
         range_level += num_level_0;
     }
-    *players = (range_score * 100) / range_level; //TODO: in utils func percent
+    if(range_level==0){
+        *players=0;
+        return SUCCESS;
+    }
+    *players = (range_score * 100) / (double)range_level; //TODO: in utils func percent
     return SUCCESS;
 }
 
