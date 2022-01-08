@@ -4,12 +4,15 @@
 
 #ifndef WET2_GROUP_H
 #define WET2_GROUP_H
+
+
 #include <exception>
 #include <iostream>
 #include <memory>
 #include "Player.h"
 #include "DynamicArray.h"
-#include "AvlTree.h"
+#include "AvlTree_sum.h"
+#include "Utils.h"
 
 
 class NoSuchScore : public std::exception {
@@ -34,8 +37,8 @@ class Group {
     int * hist_scores_0;
     int num_level_0;
     DynamicArray<ptr_player> all_players;
-    AVLTree<keyPlayerLevel,ptr_player> players_by_level;
-    AVLTree<keyPlayerScore,ptr_player> players_by_score;
+    AVLTree<keyPlayerLevel> players_by_level;
+    AVLTree<keyPlayerScore> players_by_score;
 
     static void _give_id(ptr_player& player, void* new_id);
 
@@ -49,6 +52,8 @@ public:
     void onChangePlayerScore(ptr_player player, int new_score);
     bool getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel, double* players);
     void merge(Group& other);
+    double averageHighestPlayerLevelByGroup(int m);
+
     int getSize();
 
     bool operator==(const Group& other);

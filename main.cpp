@@ -556,28 +556,23 @@ static errorType OnQuit(void** DS, const char* const command) {
 //    delete gm;
 //
 //}
-//
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 //#include <iostream>
-//#include "AvlTree.h"
-////#include "Player.h"
 //#include <memory>
+//#include "AvlTree.h"
 //
 //using namespace std;
 //
-////double player_to_double(Player &player){
-////    return (double)player;
-////}
-//
-//double int_to_double(int n){
-//    return (double)n;
-//}
 //
 //int main(){
-////    auto t = new AVLTree<int,int>(int_to_double);
 //    auto t = new AVLTree<int,int>();
 //    t->insert(4, 1);
 //    t->insert(3, 0);
@@ -611,7 +606,6 @@ static errorType OnQuit(void** DS, const char* const command) {
 //
 //
 //
-////    auto t2 = new AVLTree<int,int>(int_to_double);
 //    auto t2 = new AVLTree<int,int>();
 //    t2->insert(40, 8);
 //    t2->insert(30, 9);

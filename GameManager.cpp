@@ -4,6 +4,9 @@
 
 #include "GameManager.h"
 
+double cast_player_ptr_to_double(shared_ptr<Player>& player_ptr){
+    return (double)(*player_ptr);
+}
 
 GameManager::GameManager(int k, int scale) : scale(scale), k(k), num_level_0(0), max_id(0) {
     hist_scores = new int[scale + 1];//TODO: check if need to do scale+1
@@ -49,17 +52,19 @@ StatusType GameManager::mergeGroups(int GroupID1, int GroupID2) {
 }
 
 StatusType GameManager::addPlayer(int PlayerID, int GroupID, int score) {
-    if(GroupID <= 0 || GroupID >k  || PlayerID <= 0 || score > scale || score <= 0){
+    if(GroupID <= 0 || GroupID > k  || PlayerID <= 0 || score > scale || score <= 0){
         return INVALID_INPUT;
     }
 
     if(playerExist(PlayerID)){
         return FAILURE;
     }
+
     if(PlayerID > max_id){
         max_id = PlayerID;
     }
-    shared_ptr<Player> player = make_shared <Player>(PlayerID,score,GroupID) ;
+
+    shared_ptr<Player> player = std::make_shared<Player>(PlayerID, score, GroupID) ;
     shared_ptr<Group> group = groups->getKeyData(GroupID);
     group->addPlayer(player);
     hist_scores_0[player->getScore()]++;
@@ -98,9 +103,11 @@ StatusType GameManager::increasePlayerIDLevel(int PlayerID, int LevelIncrease) {
     if(PlayerID <= 0 || LevelIncrease <= 0){
         return INVALID_INPUT;
     }
+
     if(!playerExist(PlayerID)){
         return FAILURE;
     }
+
     shared_ptr<Player> player = all_players.find(PlayerID) ;
     shared_ptr<Group> group = groups->getKeyData(player->getGroup());
     group->onIncreasePlayerLevel(player, LevelIncrease);
@@ -142,12 +149,13 @@ StatusType GameManager::changePlayerIDScore(int PlayerID, int NewScore) {
     shared_ptr<Group> group = groups->getKeyData(player->getGroup());
     group->onChangePlayerScore(player, NewScore);
     int old_score = player->getScore();
-    if(!player->getLevel()) {
+
+    if(!player->getLevel()){
         hist_scores_0[old_score]--;
         player->changeScore(NewScore);
         hist_scores_0[NewScore]++;
     }
-    else{
+    else {
         hist_scores[old_score]--;
         players_by_score.remove(player->getKeyScore());
         player->changeScore(NewScore);
@@ -209,7 +217,9 @@ StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, dou
             return FAILURE;
         }
 
+        double sum = this->players_by_level.max_m_sum(m);
 
+        *avgLevel = sum / (double)m;
     }
     else {
         ptr_group group = this->groups->getKeyData(groupID);
@@ -217,8 +227,9 @@ StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, dou
             return FAILURE;
         }
 
+        *avgLevel = group->averageHighestPlayerLevelByGroup(m);
     }
-    *avgLevel = -1.0;
+
     return SUCCESS;
 }
 

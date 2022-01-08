@@ -5,14 +5,9 @@
 #include "Group.h"
 
 
-double _player_ptr_to_double(shared_ptr<Player>& player_ptr){
-    return (double)(*player_ptr);
-}
-
-
-Group::Group(int id, int scale):id(id),scale(scale),num_level_0(0){
-    hist_scores = new int[scale+1];//TODO: check if need to do scale+1
-    hist_scores_0 = new int[scale+1];
+Group::Group(int id, int scale) : id(id), scale(scale), num_level_0(0){
+    hist_scores = new int[scale + 1];
+    hist_scores_0 = new int[scale + 1];
 
     for(int i = 0; i < scale + 1; i++){
         hist_scores_0[i] = 0;
@@ -40,7 +35,8 @@ void Group::removePlayer( Group::ptr_player & player) {
     if(!player->getLevel()) {
         hist_scores_0[player->getScore()]--;
         num_level_0--;
-    }else{
+    }
+    else {
         players_by_score.remove(player->getKeyScore());
         players_by_level.remove(player->getKeyLevel());
         hist_scores[player->getScore()]--;
@@ -80,7 +76,7 @@ void Group::onChangePlayerScore(Group::ptr_player player, int new_score) {
     if(!playerExist(player)){
         throw NoSuchPlayer();
     }
-    if(new_score>scale || new_score<0){
+    if(new_score > scale || new_score < 0){
         throw NoSuchScore();
     }
 
@@ -171,6 +167,11 @@ void Group::_give_id(Group::ptr_player& player, void* new_id) {
 
 int Group::getSize() {
     return this->all_players.getCount();
+}
+
+double Group::averageHighestPlayerLevelByGroup(int m) {
+    double sum = this->players_by_level.max_m_sum(m);
+    return sum / (double)m;
 }
 
 
