@@ -47,9 +47,11 @@ public:
     bool playerExist( ptr_player & player);
     void onIncreasePlayerLevel(ptr_player player, int level_increase);
     void onChangePlayerScore(ptr_player player, int new_score);
-    void getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel, double* players);
+    bool getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel, double* players);
     void merge(Group& other);
     int getSize();
+
+    bool operator==(const Group& other);
 
     friend std::ostream& operator<<(std::ostream& os, const Group& group);
 

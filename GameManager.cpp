@@ -32,6 +32,10 @@ StatusType GameManager::mergeGroups(int GroupID1, int GroupID2) {
     ptr_group g1 = groups->getKeyData(GroupID1);
     ptr_group g2 = groups->getKeyData(GroupID2);
 
+    if(*g1 == *g2){
+        return SUCCESS;
+    }
+
     if(groups->getSizeByKey(GroupID1) > groups->getSizeByKey(GroupID2)){
         g1->merge(*g2);
     }
@@ -39,7 +43,7 @@ StatusType GameManager::mergeGroups(int GroupID1, int GroupID2) {
         g2->merge(*g1);
     }
 
-    groups->Union(GroupID1, GroupID2);
+    groups->Union(groups->find(GroupID1), groups->find(GroupID2));
 
     return SUCCESS;
 }
@@ -160,54 +164,63 @@ StatusType GameManager::getPercentOfPlayersWithScoreInBounds(int GroupID, int sc
     if(GroupID < 0 || GroupID > k){
         return INVALID_INPUT;
     }
-    if(score<=0 || score>scale){
-        *players=0;
+    if(score <= 0 || score > scale){
+        *players = 0;
         return SUCCESS;
     }
 
     if(GroupID){
         shared_ptr<Group> group = groups->getKeyData(GroupID);
-        group->getPercentOfPlayersWithScoreInBounds(max_id, score, lowerLevel, higherLevel, players);
-        return SUCCESS;
+        bool success = group->getPercentOfPlayersWithScoreInBounds(max_id, score, lowerLevel, higherLevel, players);
+        return success ? SUCCESS : FAILURE;
     }
+
     keyPlayerScore min_tmp_score(0, score, lowerLevel);
     keyPlayerScore max_tmp_score(max_id + 1, score, higherLevel);
     keyPlayerLevel min_tmp_level(0, lowerLevel);
-    keyPlayerLevel max_tmp_level(0, higherLevel);
-    int range_score=players_by_score.rangeCount(min_tmp_score, max_tmp_score);
-    int range_level=players_by_level.rangeCount(min_tmp_level, max_tmp_level);
+    keyPlayerLevel max_tmp_level(max_id + 1, higherLevel);
+
+    int range_score = players_by_score.rangeCount(min_tmp_score, max_tmp_score);
+    int range_level = players_by_level.rangeCount(min_tmp_level, max_tmp_level);
     if(lowerLevel == 0){
         range_score += hist_scores_0[score];
         range_level += num_level_0;
     }
-    if(range_level==0){
-        *players=0;
-        return SUCCESS;
+
+    if(range_level <= 0){
+        return FAILURE;
     }
-    *players = (range_score * 100) / (double)range_level; //TODO: in utils func percent
+
+    *players = Utils::percent(range_score, range_level);
     return SUCCESS;
 }
 
-//StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel){
-//    if(groupID < 0 || groupID > this->k || m <= 0 || !avgLevel){
-//        return INVALID_INPUT;
-//    }
-//
-//    if(groupID == 0){
-//        if(m > this->players_level_0.getCount()){
-//            return FAILURE;
-//        }
-//
-//
-//    }
-//    else {
-//        ptr_group group = this->groups->getKeyData(groupID);
-//        if(m > group->getSize()){
-//            return FAILURE;
-//        }
-//
-//    }
-//}
+StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel){
+    if(groupID < 0 || groupID > this->k || m <= 0 || !avgLevel){
+        return INVALID_INPUT;
+    }
+
+    if(groupID == 0){
+        if(m > this->all_players.getCount()){
+            return FAILURE;
+        }
+
+
+    }
+    else {
+        ptr_group group = this->groups->getKeyData(groupID);
+        if(m > group->getSize()){
+            return FAILURE;
+        }
+
+    }
+    *avgLevel = -1.0;
+    return SUCCESS;
+}
+
+StatusType GameManager::getPlayersBound(int GroupID, int score, int m, int *LowerBoundPlayers, int *HigherBoundPlayers){
+    return FAILURE;
+}
 
 std::ostream &operator<<(ostream &os, const GameManager &game_manager) {
     os << "groups arr:" << endl;
@@ -234,4 +247,5 @@ std::ostream &operator<<(ostream &os, const GameManager &game_manager) {
 
     return os;
 }
+
 

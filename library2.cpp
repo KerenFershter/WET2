@@ -10,6 +10,7 @@ void* Init(int k, int scale) {
     GameManager *DS = new GameManager(k,scale);
     return (void*) DS;
 }
+
 StatusType MergeGroups(void *DS, int GroupID1, int GroupID2){
     return ((GameManager*) DS)->mergeGroups(GroupID1, GroupID2);
 }
@@ -31,10 +32,17 @@ StatusType ChangePlayerIDScore(void *DS, int PlayerID, int NewScore){
 }
 StatusType GetPercentOfPlayersWithScoreInBounds(void *DS, int GroupID, int score, int lowerLevel, int higherLevel,
                                                 double * players){
-    return ((GameManager*) DS)->getPercentOfPlayersWithScoreInBounds( GroupID,score,lowerLevel,higherLevel,players);
+    return ((GameManager*) DS)->getPercentOfPlayersWithScoreInBounds(GroupID, score, lowerLevel, higherLevel, players);
 }
 
+StatusType AverageHighestPlayerLevelByGroup(void *DS, int GroupID, int m, double * level){
+    return ((GameManager*) DS)->averageHighestPlayerLevelByGroup(GroupID, m, level);
+}
 
+StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
+                           int * LowerBoundPlayers, int * HigherBoundPlayers){
+    return ((GameManager*) DS)->getPlayersBound(GroupID, score, m, LowerBoundPlayers, HigherBoundPlayers);
+}
 
 void Quit(void** DS){
     delete((GameManager*) *DS);

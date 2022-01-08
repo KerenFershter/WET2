@@ -116,24 +116,31 @@ void Group::merge(Group& other){
     this->players_by_score.merge(other.players_by_score);
 }
 
-void Group::getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel,
+bool Group::getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel,
                                                  double *players) {
 
     keyPlayerScore min_tmp_score(0, score, lowerLevel);
-    keyPlayerScore max_tmp_score(max_id+1, score, higherLevel);
+    keyPlayerScore max_tmp_score(max_id + 1, score, higherLevel);
     keyPlayerLevel min_tmp_level(0, lowerLevel);
-    keyPlayerLevel max_tmp_level(0, higherLevel);
+    keyPlayerLevel max_tmp_level(max_id + 1, higherLevel);
+
     int range_score = players_by_score.rangeCount(min_tmp_score, max_tmp_score);
     int range_level = players_by_level.rangeCount(min_tmp_level, max_tmp_level);
     if(lowerLevel == 0){
         range_score += hist_scores_0[score];
         range_level += num_level_0;
     }
-    if(range_level==0){
-        *players=0;
-        return;
+
+    if(range_level <= 0){
+        return false;
     }
-    *players = (double)(range_score * 100) / (double)range_level;//TODO: in utils func percent
+
+    *players = *players = Utils::percent(range_score, range_level);
+    return true;
+}
+
+bool Group::operator==(const Group& other){
+    return this->id == other.id;
 }
 
 std::ostream &operator<<(ostream &os, const Group &group) {

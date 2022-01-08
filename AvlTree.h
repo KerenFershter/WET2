@@ -533,32 +533,26 @@ private:
     }
 
     static _node_ptr _merge(_node_ptr& root1, _node_ptr& root2){
+        if(!root1){
+            return root2;
+        }
+        if(!root2){
+            return root1;
+        }
+
         int size1 = AVLTree<K,T>::_size(root1);
         int size2 = AVLTree<K,T>::_size(root2);
 
-        if(root1!= nullptr && root2!= nullptr){//both not empty
-            SimpleArray<_node_ptr> arr1(size1);
-            SimpleArray<_node_ptr> arr2(size2);
-            SimpleArray<_node_ptr> arr3(size1 + size2);
-            AVLTree<K,T>::_to_sorted_array(root1, arr1, 0, size1);
-            AVLTree<K,T>::_to_sorted_array(root2, arr2, 0, size2);
-            AVLTree<K,T>::_merge_arrays(arr3, arr1, arr2, size1, size2);
-            return AVLTree<K,T>::_array_to_tree(arr3, 0, size1 + size2 - 1);
-        }
-        if(root1== nullptr && root2!= nullptr){//1 empty
-            SimpleArray<_node_ptr> arr2(size2);
-            AVLTree<K,T>::_to_sorted_array(root2, arr2, 0, size2);
-            SimpleArray<_node_ptr> arr3(size2);
-            return AVLTree<K,T>::_array_to_tree(arr3, 0,  size2 - 1);
-        }
-        if(root1!= nullptr && root2== nullptr){//2 empty
-            SimpleArray<_node_ptr> arr1(size1);
-            AVLTree<K,T>::_to_sorted_array(root1, arr1, 0, size1);
-            SimpleArray<_node_ptr> arr3(size1);
-            return AVLTree<K,T>::_array_to_tree(arr3, 0,  size1 - 1);
-        }
-        return nullptr;//both empty
+        SimpleArray<_node_ptr> arr1(size1);
+        SimpleArray<_node_ptr> arr2(size2);
+        SimpleArray<_node_ptr> arr3(size1 + size2);
 
+        AVLTree<K,T>::_to_sorted_array(root1, arr1, 0, size1);
+        AVLTree<K,T>::_to_sorted_array(root2, arr2, 0, size2);
+
+        AVLTree<K,T>::_merge_arrays(arr3, arr1, arr2, size1, size2);
+
+        return AVLTree<K,T>::_array_to_tree(arr3, 0, size1 + size2 - 1);
     }
 
     static void _to_sorted_array(_node_ptr& root, SimpleArray<_node_ptr>& arr, int start_idx, int size){
