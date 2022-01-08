@@ -93,7 +93,7 @@ public: //TODO: private
     }
 
     void clean(){
-        while (size){
+        while (head!= nullptr){
             pop();
         }
     }
@@ -185,7 +185,10 @@ public: //TODO: private
     }
 
     bool isEmpty(){
-        return (bool)this->head;
+        if(head== nullptr){
+            return true;
+        }
+        return false;
     }
 
 //    friend std::ostream& operator<<(std::ostream& os, const List<T>& list){
@@ -376,14 +379,14 @@ template<class T>
 void DynamicArray<T>::merge(DynamicArray<T>& other){
     int other_list_size = other.size;
     for(int i = 0; i < other_list_size; i++){
-        _List list_i = other.A[i];
-        while(!list_i.isEmpty()){
-            this->insert(list_i.getFirstKey(), list_i.getFirstData());
-            list_i.pop();
+        _List * list_i = (&other.A[i]);
+        while(!list_i->isEmpty()){
+            this->insert(list_i->getFirstKey(), list_i->getFirstData());
+            list_i->pop();
         }
     }
 
-    other.clean();
+    //other.clean();
 }
 
 template<class T>
