@@ -4,6 +4,9 @@
 
 #include "GameManager.h"
 
+double cast_player_ptr_to_double(shared_ptr<Player>& player_ptr){
+    return (double)(*player_ptr);
+}
 
 GameManager::GameManager(int k, int scale) : scale(scale), k(k), num_level_0(0), max_id(0) {
     hist_scores = new int[scale + 1];//TODO: check if need to do scale+1
@@ -16,6 +19,12 @@ GameManager::GameManager(int k, int scale) : scale(scale), k(k), num_level_0(0),
     for(int i = 1; i < k + 1; i++){
         groups->MakeSet(i,shared_ptr<Group>(new Group(i,scale)));
     }
+
+    players_by_level = new AVLTree<keyPlayerLevel,ptr_player>(
+            reinterpret_cast<function<double(shared_ptr<Player>&)>&>(cast_player_ptr_to_double));
+    players_by_score = new AVLTree<keyPlayerScore, ptr_player>(
+            reinterpret_cast<function<double(shared_ptr<Player> &)>&>(cast_player_ptr_to_double)
+    );
 }
 
 GameManager::~GameManager() {
@@ -83,8 +92,8 @@ StatusType GameManager::removePlayer(int PlayerID) {
         num_level_0--;
     }
     else {
-        players_by_level.remove(player->getKeyLevel());
-        players_by_score.remove(player->getKeyScore());
+        players_by_level->remove(player->getKeyLevel());
+        players_by_score->remove(player->getKeyScore());
         hist_scores[player->getScore()]--;
     }
     return SUCCESS;
@@ -106,17 +115,17 @@ StatusType GameManager::increasePlayerIDLevel(int PlayerID, int LevelIncrease) {
         hist_scores_0[player->getScore()]--;
         num_level_0--;
         player->increaseLevel(LevelIncrease);//TODO: check increaseLevel
-        players_by_level.insert(player->getKeyLevel(), player);
-        players_by_score.insert(player->getKeyScore(), player);
+        players_by_level->insert(player->getKeyLevel(), player);
+        players_by_score->insert(player->getKeyScore(), player);
         hist_scores[player->getScore()]++;
 
     }
     else {
-        players_by_level.remove(player->getKeyLevel());
-        players_by_score.remove(player->getKeyScore());
+        players_by_level->remove(player->getKeyLevel());
+        players_by_score->remove(player->getKeyScore());
         player->increaseLevel(LevelIncrease);//TODO: check increaseLevel
-        players_by_level.insert(player->getKeyLevel(), player);
-        players_by_score.insert(player->getKeyScore(), player);
+        players_by_level->insert(player->getKeyLevel(), player);
+        players_by_score->insert(player->getKeyScore(), player);
     }
 
     return SUCCESS;
@@ -174,8 +183,8 @@ StatusType GameManager::getPercentOfPlayersWithScoreInBounds(int GroupID, int sc
     keyPlayerScore max_tmp_score(max_id + 1, score, higherLevel);
     keyPlayerLevel min_tmp_level(0, lowerLevel);
     keyPlayerLevel max_tmp_level(0, higherLevel);
-    int range_score=players_by_score.rangeCount(min_tmp_score, max_tmp_score);
-    int range_level=players_by_level.rangeCount(min_tmp_level, max_tmp_level);
+    int range_score = players_by_score->rangeCount(min_tmp_score, max_tmp_score);
+    int range_level = players_by_level->rangeCount(min_tmp_level, max_tmp_level);
     if(lowerLevel == 0){
         range_score += hist_scores_0[score];
         range_level += num_level_0;
