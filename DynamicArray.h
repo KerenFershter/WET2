@@ -28,14 +28,15 @@ template<class T>
 struct Node {
     int key;
     T data;
-    std::shared_ptr<Node> prev;
+    //std::shared_ptr<Node> prev;
     std::shared_ptr<Node> next;
 
     Node() = default;
 
-    Node(int key, T& data): key(key), data(data), prev(nullptr), next(nullptr){}
-
-    Node(const Node& other) : key(other.key), data(data.info), prev(other.prev), next(other.next){}
+   // Node(int key, T& data): key(key), data(data), prev(nullptr), next(nullptr){}
+   Node(int key, T& data): key(key), data(data), next(nullptr){}
+   Node(const Node& other) : key(other.key), data(data.info), next(other.next){}
+    //Node(const Node& other) : key(other.key), data(data.info), prev(other.prev), next(other.next){}
 };
 
 
@@ -59,40 +60,40 @@ class List {
 public: //TODO: private
     int size;
     std::shared_ptr<_Node> head;
-    std::shared_ptr<_Node> tail;
+    //std::shared_ptr<_Node> tail;
 
 //public:
 //    friend std::ostream &operator<<(std::ostream &os, const List<T> &list);
-    List() : size(0), head(nullptr), tail(nullptr){}
+    List() : size(0), head(nullptr){}
 
     void push(int key, T& data){
-        std::shared_ptr<_Node> new_node (new Node<T>(key, data));
-        if(tail == nullptr){
-            head = new_node;
-            tail = head;
+       // std::shared_ptr<_Node> new_node=make_shared<Node<T>>(key, data);
+        if(head == nullptr){
+            head = make_shared<Node<T>>(key, data);
         }
         else {
-            new_node->prev = tail;
-            tail->next = new_node;
-            tail = tail->next;
+            std::shared_ptr<_Node> tmp = head;
+            head = make_shared<Node<T>>(key, data);
+            head->next= tmp;
         }
         size++;
     }
 
     void pop(){
-        if(size > 1){
-            tail = tail->prev;
-            tail->next.reset();
-            this->tail->next = nullptr;
-            this->size--;
-        } else{
-            tail.reset();
+        if(head!= nullptr) {
+            std::shared_ptr<_Node> tmp = head;
+            head = head->next;
+            tmp.reset();
             this->size--;
         }
+//        } else{
+//            head.reset();
+//            this->size--;
+//        }
     }
 
     void clean(){
-        while (size){
+        while (head!= nullptr){
             pop();
         }
     }
@@ -123,62 +124,57 @@ public: //TODO: private
         return false;
     }
 
-    int getLastKey(){
-        if(tail){
-            return tail->key;
+    int getFirstKey(){
+        if(head){
+            return head->key;
         }
         return DEFAULT_KEY;
     }
 
-    T& getLastData(){
-        if(!tail){
+    T& getFirstData(){
+        if(!head){
             throw EmptyList();
         }
-        return tail->data;
+        return head->data;
     }
 
     void remove(int key,bool * removed){
         std::shared_ptr<_Node> iter = this->head;
-//        if(size == 1 && iter->key == key){
-//            iter= nullptr;
-//            head= nullptr;
-//            tail= nullptr;
-//            size--;
-//            *removed=true;
-//            return;
-//        }
-
+        if(iter== nullptr){//empty list
+            *removed = false;
+            return;
+        }
+        if( iter->next == nullptr){//only one item
+            if(iter->key == key){//removes head
+                head = nullptr;
+                iter = nullptr;
+                size--;
+                *removed = true;
+            }
+            *removed = false;
+            return;
+        }
+        std::shared_ptr<_Node> iter_prev=iter;
+        iter = iter->next;
         while(iter != nullptr){
             if(iter->key == key){
-                if(iter->prev == nullptr && iter->next == nullptr){//only one item
-                    head = nullptr;
-                    tail = nullptr;
+                if( iter->next == nullptr){//removes last
+                    iter_prev->next = nullptr;
                 }
 
-                if(iter->next != nullptr && iter->prev == nullptr){//removes head
-                    head = iter->next;
-                }
-
-//                if(iter->prev!= nullptr){
-//                    iter->prev->next=iter->next;
-//                }
-
-                if(iter->next == nullptr && iter->prev != nullptr){//tail
-                    iter->prev->next = nullptr;
-                }
-
-                if(iter->next != nullptr && iter->prev != nullptr){//not head or tail
-                    iter->prev->next = iter->next;
-                    iter->next->prev = iter->prev;
+                if(iter->next != nullptr){//not head or last
+                    iter_prev->next = iter->next;
                 }
 
                 iter = nullptr;
+                iter_prev= nullptr;
                 size--;
                 *removed = true;
                 return;
             }
-
+            iter_prev=iter;
             iter = iter->next;
+
         }
 
         *removed = false;
@@ -189,7 +185,10 @@ public: //TODO: private
     }
 
     bool isEmpty(){
-        return (bool)this->head;
+        if(head== nullptr){
+            return true;
+        }
+        return false;
     }
 
 //    friend std::ostream& operator<<(std::ostream& os, const List<T>& list){
@@ -366,8 +365,8 @@ void DynamicArray<T>::resize(float factor){
     counter = 0;
     for(int i = 0; i < tmp_size; i++) {
         while(tmp[i].getSize()){
-            tmpKey = tmp[i].getLastKey();
-            tmpData = tmp[i].getLastData();
+            tmpKey = tmp[i].getFirstKey();
+            tmpData = tmp[i].getFirstData();
             this->insert(tmpKey, tmpData);
             tmp[i].pop();
         }
@@ -380,14 +379,14 @@ template<class T>
 void DynamicArray<T>::merge(DynamicArray<T>& other){
     int other_list_size = other.size;
     for(int i = 0; i < other_list_size; i++){
-        _List list_i = other.A[i];
-        while(!list_i.isEmpty()){
-            this->insert(list_i.getLastKey(), list_i.getLastData());
-            list_i.pop();
+        _List * list_i = (&other.A[i]);
+        while(!list_i->isEmpty()){
+            this->insert(list_i->getFirstKey(), list_i->getFirstData());
+            list_i->pop();
         }
     }
 
-    other.clean();
+    //other.clean();
 }
 
 template<class T>

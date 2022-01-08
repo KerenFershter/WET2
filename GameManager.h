@@ -4,11 +4,13 @@
 
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
-#include "memory"
+
+#include <memory>
+#include <iostream>
 #include "Group.h"
-#include "iostream"
 #include "UnionFind.h"
-#include "library.h"
+#include "library2.h"
+#include "Utils.h"
 
 class LevelNotChanged : public std::exception {
 public:
@@ -41,15 +43,15 @@ public:
     ~GameManager();
     //void* init(int k,int scale);
     StatusType mergeGroups(int GroupID1, int GroupID2);//TODO:merge between the players
-
     StatusType addPlayer(int PlayerID, int GroupID, int score);
     StatusType removePlayer( int PlayerID);
     bool playerExist(int player_id);
     StatusType increasePlayerIDLevel(int PlayerID, int LevelIncrease);
     StatusType changePlayerIDScore( int PlayerID, int NewScore);
-//    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
     StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score,
                                                     int lowerLevel, int higherLevel, double * players);
+    StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
+    StatusType getPlayersBound(int GroupID, int score, int m, int * LowerBoundPlayers, int * HigherBoundPlayers);
     friend std::ostream& operator<<(std::ostream& os, const GameManager& game_manager);
 
 };

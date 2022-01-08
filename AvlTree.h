@@ -71,17 +71,6 @@ struct TNode {
         sum(0)
         {}
 
-//    TNode(const K& key, const T& data) :
-//        key(key),
-//        data(data),
-//        left(nullptr),
-//        right(nullptr),
-//        height(0),
-//        size(1)
-////        ,
-////        sum(0)
-//        {}
-
     TNode(const _node& other) :
         key(other.key),
         data(other.data),
@@ -447,6 +436,13 @@ private:
     }
 
     static _node_ptr _merge(_node_ptr& root1, _node_ptr& root2){
+        if(!root1){
+            return root2;
+        }
+        if(!root2){
+            return root1;
+        }
+
         int size1 = AVLTree<K,T>::_size(root1);
         int size2 = AVLTree<K,T>::_size(root2);
 
@@ -458,7 +454,6 @@ private:
         AVLTree<K,T>::_to_sorted_array(root2, arr2, 0, size2);
 
         AVLTree<K,T>::_merge_arrays(arr3, arr1, arr2, size1, size2);
-
 
         return AVLTree<K,T>::_array_to_tree(arr3, 0, size1 + size2 - 1);
     }
@@ -623,7 +618,6 @@ public:
 
     void merge(AVLTree<K,T>& other){
         this->root = AVLTree<K,T>::_merge(this->root, other.root);
-
         this->size = AVLTree<K,T>::_update_size(this->root);
         AVLTree<K,T>::_update_height(this->root);
         AVLTree<K,T>::_update_sum(this->root, this->to_double);
