@@ -136,16 +136,27 @@ class UnionFind {
             return p;
         }
 
-        if(sizes[p] < sizes[q]){
-            parents[p] = q;
-            sizes[q] += sizes[p];
-            sizes[p] = DEFAULT;//there is no more size after union, default -1
-            return q;
+//        if(sizes[p] < sizes[q]){
+//            parents[p] = q;
+//            sizes[q] += sizes[p];
+//            sizes[p] = DEFAULT;//there is no more size after union, default -1
+//            return q;
+//        }
+//        parents[q] = p;
+//        sizes[p] += sizes[q];
+//        sizes[q] = DEFAULT;//there is no more size after union, default -1
+//        return p;
+
+        if(sizes[p] > sizes[q]){
+            parents[q] = p;
+            sizes[p] += sizes[q];
+            sizes[q] = DEFAULT;//there is no more size after union, default -1
+            return p;
         }
-        parents[q] = p;
-        sizes[p] += sizes[q];
-        sizes[q] = DEFAULT;//there is no more size after union, default -1
-        return p;
+        parents[p] = q;
+        sizes[q] += sizes[p];
+        sizes[p] = DEFAULT;//there is no more size after union, default -1
+        return q;
     }
 
 template<class T>

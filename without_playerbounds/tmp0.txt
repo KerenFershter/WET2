@@ -1,23 +1,12 @@
 Init 39 79
-AddPlayer 531300935 16 69
-AddPlayer 2109360950 39 78
-AddPlayer 1765824312 30 60
-AddPlayer 1774460279 24 37
-GetPercentOfPlayersWithScoreInBounds 30 21 0 0
-AddPlayer 1520661217 6 13
-AddPlayer 1315106514 18 75
-AddPlayer 949507238 14 15
-AddPlayer 1765824312 20 47
-AddPlayer 1712184963 24 34
-AddPlayer 1629394179 4 61
-AddPlayer 1879003819 -6 76
-AddPlayer 1073766523 7 29
-AddPlayer 186487878 8 20
-IncreasePlayerIDLevel 11996485 3
-RemovePlayer 1629394179
-AddPlayer 769449603 18 62
-AddPlayer 1018256123 9 13
-AddPlayer 1315106514 38 6
-AddPlayer 1014160070 27 25
-GetPercentOfPlayersWithScoreInBounds 0 62 0 0
+AddPlayer 1 38 6
+RemovePlayer 1
+AddPlayer 2 15 64
+AddPlayer 3 34 32
+AddPlayer 4 38 30
+RemovePlayer 3
+IncreasePlayerIDLevel 2 7
+MergeGroups 34 38
+MergeGroups 15 38
+ChangePlayerIDScore 2 48
 Quit
