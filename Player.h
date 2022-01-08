@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <iostream>
+#include "INumericable.h"
 
 using  namespace std;
 
@@ -108,7 +109,7 @@ struct keyPlayerScore{
 
 
 
-class Player{
+class Player : public INumericable{
     keyPlayerLevel key_level;
     keyPlayerScore key_score;
     int group;

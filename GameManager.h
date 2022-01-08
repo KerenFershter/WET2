@@ -7,9 +7,10 @@
 
 #include <memory>
 #include <iostream>
-#include "Group.h"
-#include "UnionFind.h"
 #include "library2.h"
+#include "AVLTree_sum.h"
+#include "UnionFind.h"
+#include "Group.h"
 #include "Utils.h"
 
 class LevelNotChanged : public std::exception {
@@ -27,6 +28,7 @@ public:
 class GameManager {
     typedef shared_ptr<Player> ptr_player;
     typedef shared_ptr<Group> ptr_group;
+
     int k;
     int scale;
     int max_id;
@@ -34,15 +36,15 @@ class GameManager {
     int * hist_scores_0;
     int num_level_0;
     DynamicArray<ptr_player> all_players;
-    AVLTree<keyPlayerLevel,ptr_player>* players_by_level;
-    AVLTree<keyPlayerScore,ptr_player>* players_by_score;
+    AVLTree<keyPlayerLevel> players_by_level;
+    AVLTree<keyPlayerScore> players_by_score;
     UnionFind<ptr_group> * groups;
 
 public:
     GameManager(int k,int scale);
     ~GameManager();
     //void* init(int k,int scale);
-    StatusType mergeGroups(int GroupID1, int GroupID2);//TODO:merge between the players
+    StatusType mergeGroups(int GroupID1, int GroupID2);
     StatusType addPlayer(int PlayerID, int GroupID, int score);
     StatusType removePlayer( int PlayerID);
     bool playerExist(int player_id);
