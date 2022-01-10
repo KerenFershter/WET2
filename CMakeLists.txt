@@ -3,4 +3,10 @@ project(Wet2)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Wet2 main.cpp Player.h Player.cpp Group.cpp Group.h UnionFind.h DynamicArray.h AvlTree.h Utils.h GameManager.cpp GameManager.h library2.h library2.cpp tmp.h INumericable.h)
+add_executable(Wet2
+        main.cpp
+        library2.cpp
+        Player.cpp
+        Group.cpp
+        GameManager.cpp
+        )

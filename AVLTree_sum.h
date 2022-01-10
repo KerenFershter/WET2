@@ -3,6 +3,8 @@
 #define WET2_AVLTREE_SUM_H
 
 
+#define TREE_PRINT_DEFAULT_SPACE_MARGIN 10
+
 #include <memory>
 #include <functional>
 #include "INumericable.h"
@@ -94,7 +96,7 @@ private:
     int size;
 
 
-    static double to_double(numericable_ptr data_ptr){
+    static double _to_double(numericable_ptr data_ptr){
         if(data_ptr){
             return (double)(*data_ptr);
         }
@@ -107,10 +109,10 @@ private:
         }
 
         if(key < root->key){
-            return AVLTree<K>::_find(root->left, key);
+            return _find(root->left, key);
         }
 
-        return AVLTree<K>::_find(root->right, key);
+        return _find(root->right, key);
     }
 
     static void _insert(_node_ptr& root, const K& key, const numericable_ptr& data) {
@@ -124,21 +126,15 @@ private:
         }
 
         if(key < root->key){
-            AVLTree<K>::_insert(root->left, key, data);
+            _insert(root->left, key, data);
         }
 
         else {
-            AVLTree<K>::_insert(root->right, key, data);
+            _insert(root->right, key, data);
         }
 
-        root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-        root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
-
-        AVLTree<K>::_balance(root);
-
-        root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-        root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-        root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
+        _balance(root);
+        _shallow_update_metadata(root);
     }
 
     static int _height(_node_ptr& root){
@@ -154,7 +150,7 @@ private:
     }
 
     static int _BF(const _node_ptr& root) {
-        return AVLTree<K>::_height(root->left) - AVLTree<K>::_height(root->right);
+        return _height(root->left) - _height(root->right);
     }
 
     static void _balance(_node_ptr& root) {
@@ -162,22 +158,22 @@ private:
             return;
         }
 
-        int BF = AVLTree<K>::_BF(root);
+        int BF = _BF(root);
         if(BF == 2) {
-            if(AVLTree<K>::_BF(root->left) >= 0) {
-                AVLTree<K>::LL(root);
+            if(_BF(root->left) >= 0) {
+                LL(root);
             }
-            else if (AVLTree<K>::_BF(root->left) == -1) {
-                AVLTree<K>::LR(root);
+            else if (_BF(root->left) == -1) {
+                LR(root);
             }
         }
 
         else if(BF == -2) {
-            if(AVLTree<K>::_BF(root->right) <= 0) {
-                AVLTree<K>::RR(root);
+            if(_BF(root->right) <= 0) {
+                RR(root);
             }
-            else if(AVLTree<K>::_BF(root->right) == 1) {
-                AVLTree<K>::RL(root);
+            else if(_BF(root->right) == 1) {
+                RL(root);
             }
         }
     }
@@ -186,17 +182,13 @@ private:
         _node_ptr child = root->right;
         root->right = child->left;
 
-        root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-        child->height = Utils::max(AVLTree<K>::_height(child->right), AVLTree<K>::_height(root)) + 1;
+        root->height = Utils::max(_height(root->left), _height(root->right)) + 1;
+        child->height = Utils::max(_height(child->right), _height(root)) + 1;
 
         child->left = root;
         root = child;
 
-//        TODO: check if this works, try is with update size and sum w/o recursion.
-        AVLTree<K>::_update_size(root);
-        AVLTree<K>::_update_size(child);
-        AVLTree<K>::_update_sum(root);
-        AVLTree<K>::_update_sum(child);
+        _shallow_update_metadata(root);
     }
 
     static void LL(_node_ptr& root)
@@ -206,26 +198,22 @@ private:
         child->right = root;
         root->left = tmp;
 
-        root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-        child->height = Utils::max(AVLTree<K>::_height(child->left), AVLTree<K>::_height(child->right)) + 1;
+        root->height = Utils::max(_height(root->left), _height(root->right)) + 1;
+        child->height = Utils::max(_height(child->left), _height(child->right)) + 1;
 
         root = child;
 
-//        TODO: check if this works, try is with update size and sum w/o recursion.
-        AVLTree<K>::_update_size(root);
-        AVLTree<K>::_update_size(child);
-        AVLTree<K>::_update_sum(root);
-        AVLTree<K>::_update_sum(child);
+        _shallow_update_metadata(root);
     }
 
     static void RL(_node_ptr& root) {
-        AVLTree<K>::LL(root->right);
-        AVLTree<K>::RR(root);
+        LL(root->right);
+        RR(root);
     }
 
     static void LR(_node_ptr& root) {
-        AVLTree<K>::RR(root->left);
-        AVLTree<K>::LL(root);
+        RR(root->left);
+        LL(root);
     }
 
     static void _remove(_node_ptr& root, K key) {
@@ -234,35 +222,25 @@ private:
         }
 
         if(key < root->key) {
-            AVLTree<K>::_remove(root->left, key);
-            if(root){
-                root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-                root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-                root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
-            }
+            _remove(root->left, key);
         }
 
         else if(root->key < key) {
-            AVLTree<K>::_remove(root->right, key);
-            if(root){
-                root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right));
-                root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-                root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
-            }
+            _remove(root->right, key);
         }
 
         else {
-            if(AVLTree<K>::_is_leaf(root)) {
+            if(_is_leaf(root)) {
                 root.reset();
                 root = nullptr;
             }
 
-            else if(root->left && !root->right) {
-                root = root->left;
+            else if(!root->left && root->right) {
+                root = root->right;
             }
 
-            else if(root->right && !root->left) {
-                root = root->right;
+            else if(root->left && !root->right) {
+                root = root->left;
             }
 
             else {
@@ -274,20 +252,15 @@ private:
                 root->key = next->key;
                 root->data = next->data;
 
-                AVLTree<K>::_remove(root->right, root->key);
-
-                root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-                root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-                root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
+                _remove(root->right, root->key);
             }
         }
 
-        AVLTree<K>::_balance(root);
-        if(root){
-            root->height = Utils::max(AVLTree<K>::_height(root->left), AVLTree<K>::_height(root->right)) + 1;
-            root->size = AVLTree<K>::_size(root->left) + AVLTree<K>::_size(root->right) + 1;
-            root->sum = AVLTree<K>::to_double(root->data) + AVLTree<K>::_sum(root->left) + AVLTree<K>::_sum(root->right);
-        }
+        _shallow_update_metadata(root);
+
+        _balance(root);
+
+        _shallow_update_metadata(root);
     }
 
     static bool _is_leaf(_node_ptr& root){
@@ -300,16 +273,16 @@ private:
         }
 
         if(key < root->key){
-            return AVLTree<K>::_rank(root->left, key, count_smaller);
+            return _rank(root->left, key, count_smaller);
         }
 
         if(root->key < key){
-            return AVLTree<K>::_rank(root->right, key,
-                                     count_smaller + 1 + AVLTree<K>::_size(root->left));
+            return _rank(root->right, key,
+                                     count_smaller + 1 + _size(root->left));
         }
 
         else {
-            return count_smaller + 1 + AVLTree<K>::_size(root->left);
+            return count_smaller + 1 + _size(root->left);
         }
     }
 
@@ -318,14 +291,14 @@ private:
             throw TreeEmpty();
         }
 
-        if(rank <= 0 || rank > AVLTree<K>::_size(root)){
+        if(rank <= 0 || rank > _size(root)){
             throw InvalidRank();
         }
 
-        int left_size = AVLTree<K>::_size(root->left);
+        int left_size = _size(root->left);
 
         if(rank <= left_size){
-            return AVLTree<K>::_select(root->left, rank);
+            return _select(root->left, rank);
         }
 
         else if(rank == left_size + 1){
@@ -333,44 +306,108 @@ private:
         }
 
         else {
-            return AVLTree<K>::_select(root->right, rank - left_size - 1);
+            return _select(root->right, rank - left_size - 1);
         }
     }
 
-    static int _update_size(_node_ptr& root){
+    static void _shallow_update_metadata(_node_ptr& root){
+        if(!root){
+            return;
+        }
+        shallow_update_height(root->left);
+        shallow_update_height(root->right);
+        shallow_update_height(root);
+        shallow_update_size(root->left);
+        shallow_update_size(root->right);
+        shallow_update_size(root);
+        shallow_update_sum(root->left);
+        shallow_update_sum(root->right);
+        shallow_update_sum(root);
+    }
+
+    static int _deep_update_size(_node_ptr& root){
         if(!root){
             return 0;
         }
-
-        root->size = AVLTree<K>::_update_size(root->left) + AVLTree<K>::_update_size(root->right) + 1;
+        root->size = _deep_update_size(root->left) + _deep_update_size(root->right) + 1;
         return root->size;
     }
-
-    static int _update_height(_node_ptr& root){
+    static int _deep_update_height(_node_ptr& root){
         if(!root){
             return -1;
         }
-
-        root->height = Utils::max(AVLTree<K>::_update_height(root->left),
-                                  AVLTree<K>::_update_height(root->right)) + 1;
+        root->height = Utils::max(_deep_update_height(root->left),
+                                  _deep_update_height(root->right)) + 1;
         return root->height;
     }
-
-    static int _update_sum(_node_ptr& root){
+    static double _deep_update_sum(_node_ptr& root){
         if(!root){
             return 0;
         }
+        root->sum = _to_double(root->data)
+                + _deep_update_sum(root->left)
+                +_deep_update_sum(root->right);
+        return root->sum;
+    }
 
-        root->sum = AVLTree<K>::to_double(root->data)
-                + AVLTree<K>::_update_sum(root->left)
-                + AVLTree<K>::_update_sum(root->right);
+    static int _shallow_update_size(_node_ptr& root){
+        if(!root){
+            return 0;
+        }
+        root->size = _size(root->left) + _size(root->right) + 1;
+        return root->size;
+    }
+
+    static int shallow_update_size(_node_ptr& root){
+        if(!root){
+            return 0;
+        }
+        _shallow_update_size(root->left);
+        _shallow_update_size(root->right);
+        _shallow_update_size(root);
+        return root->size;
+    }
+
+    static int _shallow_update_height(_node_ptr& root){
+        if(!root){
+            return -1;
+        }
+        root->height = Utils::max(_height(root->left), _height(root->right)) + 1;
+        return root->height;
+    }
+
+    static int shallow_update_height(_node_ptr& root){
+        if(!root){
+            return 0;
+        }
+        _shallow_update_height(root->left);
+        _shallow_update_height(root->right);
+        _shallow_update_height(root);
+        return root->height;
+    }
+
+    static double _shallow_update_sum(_node_ptr& root){
+        if(!root){
+            return 0;
+        }
+        root->sum = _to_double(root->data) + _sum(root->left) + _sum(root->right);
+        return root->sum;
+    }
+
+    static int shallow_update_sum(_node_ptr& root){
+        if(!root){
+            return 0;
+        }
+        _shallow_update_sum(root->left);
+        _shallow_update_sum(root->right);
+        _shallow_update_sum(root);
         return root->sum;
     }
 
     static void _clean(_node_ptr& root){
         if(root){
-            AVLTree<K>::_clean(root->left);
-            AVLTree<K>::_clean(root->right);
+            _clean(root->left);
+            _clean(root->right);
             root.reset();
             root = nullptr;
         }
@@ -380,14 +417,14 @@ private:
         if (!root)
             return;
 
-        space += 10;
+        space += TREE_PRINT_DEFAULT_SPACE_MARGIN;
 
         if(root->right){
-            AVLTree<K>::_print(root->right, keys, data, space);
+            _print(root->right, keys, data, space);
         }
 
         cout << endl;
-        for (int i = 10; i < space; i++){
+        for (int i = TREE_PRINT_DEFAULT_SPACE_MARGIN; i < space; i++){
             cout << " ";
         }
 
@@ -400,7 +437,7 @@ private:
         cout << "\n";
 
         if(root->left){
-            AVLTree<K>::_print(root->left, keys, data, space);
+            _print(root->left, keys, data, space);
         }
     }
 
@@ -410,13 +447,13 @@ private:
         }
 
         if(key < root->key){
-            return AVLTree<K>::_ltq_key_count(root->left, key);
+            return _ltq_key_count(root->left, key);
         }
 
-        int left_size = AVLTree<K>::_size(root->left);
+        int left_size = _size(root->left);
 
         if(root->key < key){
-            return AVLTree<K>::_ltq_key_count(root->right, key) + left_size + 1;
+            return _ltq_key_count(root->right, key) + left_size + 1;
         }
 
         else {
@@ -428,10 +465,10 @@ private:
             return 0;
         }
 
-        int ltq_low = AVLTree<K>::_ltq_key_count(root, lower_bound);
-        int ltq_up = AVLTree<K>::_ltq_key_count(root, upper_bound);
+        int ltq_low = _ltq_key_count(root, lower_bound);
+        int ltq_up = _ltq_key_count(root, upper_bound);
 
-        bool include_lower = AVLTree<K>::_find(root, lower_bound) != nullptr;
+        bool include_lower = _find(root, lower_bound) != nullptr;
 
         return ltq_up - ltq_low + (include_lower ? 1 : 0);
     }
@@ -444,28 +481,28 @@ private:
             return root1;
         }
 
-        int size1 = AVLTree<K>::_size(root1);
-        int size2 = AVLTree<K>::_size(root2);
+        int size1 = _size(root1);
+        int size2 = _size(root2);
 
         SimpleArray<_node_ptr> arr1(size1);
         SimpleArray<_node_ptr> arr2(size2);
         SimpleArray<_node_ptr> arr3(size1 + size2);
 
-        AVLTree<K>::_to_sorted_array(root1, arr1, 0, size1);
-        AVLTree<K>::_to_sorted_array(root2, arr2, 0, size2);
+        _to_sorted_array(root1, arr1, 0, size1);
+        _to_sorted_array(root2, arr2, 0, size2);
 
-        AVLTree<K>::_merge_arrays(arr3, arr1, arr2, size1, size2);
+        _merge_arrays(arr3, arr1, arr2, size1, size2);
 
-        return AVLTree<K>::_array_to_tree(arr3, 0, size1 + size2 - 1);
+        return _array_to_tree(arr3, 0, size1 + size2 - 1);
     }
 
     static void _to_sorted_array(_node_ptr& root, SimpleArray<_node_ptr>& arr, int start_idx, int size){
         if(root && size > 0){
-            int left_size = AVLTree<K>::_size(root->left);
-            AVLTree<K>::_to_sorted_array(root->left, arr, start_idx, left_size);
+            int left_size = _size(root->left);
+            _to_sorted_array(root->left, arr, start_idx, left_size);
 
-            int right_size = AVLTree<K>::_size(root->right);
-            AVLTree<K>::_to_sorted_array(root->right, arr, start_idx + left_size + 1, right_size);
+            int right_size = _size(root->right);
+            _to_sorted_array(root->right, arr, start_idx + left_size + 1, right_size);
 
 
             root->left.reset();
@@ -476,7 +513,6 @@ private:
     }
 
     static void _merge_arrays(SimpleArray<_node_ptr>& dist, SimpleArray<_node_ptr>& arr1, SimpleArray<_node_ptr>& arr2, int size1, int size2){
-//            auto arr3 = new SimpleArray<_node_ptr>(size1 + size2);
         int idx1 = 0, idx2 = 0, idx3 = 0;
 
         while(idx1 < size1 && idx2 < size2){
@@ -501,9 +537,9 @@ private:
         _node_ptr root = arr[mid];
 
         if(start_idx <= mid - 1)
-            root->left = AVLTree<K>::_array_to_tree(arr, start_idx, mid - 1);
+            root->left = _array_to_tree(arr, start_idx, mid - 1);
         if(mid + 1 <= end_idx)
-            root->right = AVLTree<K>::_array_to_tree(arr, mid + 1, end_idx);
+            root->right = _array_to_tree(arr, mid + 1, end_idx);
 
         return arr[mid];
     }
@@ -513,14 +549,16 @@ private:
             return 0;
         }
 
-        double self_sum_right = root->sum - AVLTree<K>::_sum(root->left);
+        shallow_update_sum(root);
+
+        double self_sum_right = root->sum - _sum(root->left);
 
         if(key < root->key){
-            return AVLTree<K>::_gtq_sum(root->left, key) + self_sum_right;
+            return _gtq_sum(root->left, key) + self_sum_right;
         }
 
         if(root->key < key){
-            return AVLTree<K>::_gtq_sum(root->right, key);
+            return _gtq_sum(root->right, key);
         }
 
         else {
@@ -543,19 +581,19 @@ public:
 
     void clean(){
         if(this->size)
-            AVLTree<K>::_clean(this->root);
+            _clean(this->root);
     }
 
     numericable_ptr& find(const K& key) const {
-        return AVLTree<K>::_find(this->root, key)->data;
+        return _find(this->root, key)->data;
     }
 
     bool exists(const K& key) const {
-        return (bool)(AVLTree<K>::_find(this->root, key));
+        return (bool)(_find(this->root, key));
     }
 
     void insert(const K& key, const numericable_ptr& data) {
-        AVLTree<K>::_insert(this->root, key, data);
+        _insert(this->root, key, data);
         this->size++;
     }
 
@@ -564,19 +602,19 @@ public:
             throw KeyNotExist();
         }
 
-        AVLTree<K>::_remove(this->root, key);
+        _remove(this->root, key);
         this->size--;
     }
 
     int rank(const K& key) {
-        return AVLTree<K>::_rank(this->root, key);
+        return _rank(this->root, key);
     }
 
     const K& select(int rank) {
         if(rank <= 0 || rank > this->size){
             throw InvalidRank();
         }
-        return AVLTree<K>::_select(this->root, rank);
+        return _select(this->root, rank);
     }
 
     int getSize() const {
@@ -584,18 +622,19 @@ public:
     }
 
     void print(bool keys=true, bool data=false) {
-        AVLTree<K>::_print(this->root, keys, data, 0);
+        _print(this->root, keys, data, 0);
     }
 
     int rangeCount(K lower_bound, K upper_bound){
-        return AVLTree<K>::_range_count(this->root, lower_bound, upper_bound);
+        return _range_count(this->root, lower_bound, upper_bound);
     }
 
     void merge(AVLTree<K>& other){
-        this->root = AVLTree<K>::_merge(this->root, other.root);
-        this->size = AVLTree<K>::_update_size(this->root);
-        AVLTree<K>::_update_height(this->root);
-        AVLTree<K>::_update_sum(this->root);
+        this->root = _merge(this->root, other.root);
+
+        this->size = _deep_update_size(this->root);
+        _deep_update_height(this->root);
+        _deep_update_sum(this->root);
     }
 
     double max_m_sum(int m){
@@ -603,10 +642,11 @@ public:
             return 0.0;
         }
 
+
         m = Utils::min(m, this->size);
         int m_rank = this->size - m + 1;
         K m_key = this->select(m_rank);
-        return AVLTree<K>::_gtq_sum(this->root, m_key);
+        return _gtq_sum(this->root, m_key);
     }
 };
 
