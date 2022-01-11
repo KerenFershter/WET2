@@ -39,6 +39,7 @@ class Group {
     DynamicArray<ptr_player> all_players;
     AVLTree<keyPlayerLevel> players_by_level;
     AVLTree<keyPlayerScore> players_by_score;
+    int player_count;
 
     static void _give_id(ptr_player& player, void* new_id);
 
@@ -57,9 +58,6 @@ public:
     int getSize();
 
     bool operator==(const Group& other);
-
-    friend std::ostream& operator<<(std::ostream& os, const Group& group);
-
 
 };
 

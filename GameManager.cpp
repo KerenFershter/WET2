@@ -8,8 +8,8 @@ double cast_player_ptr_to_double(shared_ptr<Player>& player_ptr){
     return (double)(*player_ptr);
 }
 
-GameManager::GameManager(int k, int scale) : scale(scale), k(k), num_level_0(0), max_id(0) {
-    hist_scores = new int[scale + 1];//TODO: check if need to do scale+1
+GameManager::GameManager(int k, int scale) : scale(scale), k(k), num_level_0(0), max_id(0), player_count(0){
+    hist_scores = new int[scale + 1];
     hist_scores_0 = new int[scale + 1];
     for(int i = 0; i < scale + 1; i++){
         hist_scores_0[i] = 0;
@@ -70,6 +70,8 @@ StatusType GameManager::addPlayer(int PlayerID, int GroupID, int score) {
     hist_scores_0[player->getScore()]++;
     num_level_0++;
     all_players.insert(player->getId(),player);
+
+    player_count++;
     return SUCCESS;
 }
 
@@ -96,6 +98,8 @@ StatusType GameManager::removePlayer(int PlayerID) {
         players_by_score.remove(player->getKeyScore());
         hist_scores[player->getScore()]--;
     }
+
+    player_count--;
     return SUCCESS;
 }
 
@@ -113,10 +117,9 @@ StatusType GameManager::increasePlayerIDLevel(int PlayerID, int LevelIncrease) {
     group->onIncreasePlayerLevel(player, LevelIncrease);
 
     if(!player->getLevel()){
-        //players_level_0.remove(player->getId());
         hist_scores_0[player->getScore()]--;
         num_level_0--;
-        player->increaseLevel(LevelIncrease);//TODO: check increaseLevel
+        player->increaseLevel(LevelIncrease);
         players_by_level.insert(player->getKeyLevel(), player);
         players_by_score.insert(player->getKeyScore(), player);
         hist_scores[player->getScore()]++;
@@ -125,7 +128,7 @@ StatusType GameManager::increasePlayerIDLevel(int PlayerID, int LevelIncrease) {
     else {
         players_by_level.remove(player->getKeyLevel());
         players_by_score.remove(player->getKeyScore());
-        player->increaseLevel(LevelIncrease);//TODO: check increaseLevel
+        player->increaseLevel(LevelIncrease);
         players_by_level.insert(player->getKeyLevel(), player);
         players_by_score.insert(player->getKeyScore(), player);
     }
@@ -213,7 +216,7 @@ StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, dou
     }
 
     if(groupID == 0){
-        if(m > this->all_players.getCount()){
+        if(m > this->player_count){
             return FAILURE;
         }
 
@@ -236,31 +239,3 @@ StatusType GameManager::averageHighestPlayerLevelByGroup(int groupID, int m, dou
 StatusType GameManager::getPlayersBound(int GroupID, int score, int m, int *LowerBoundPlayers, int *HigherBoundPlayers){
     return FAILURE;
 }
-
-std::ostream &operator<<(ostream &os, const GameManager &game_manager) {
-    os << "groups arr:" << endl;
-    for(int i = 1; i <= game_manager.k; i++){
-        shared_ptr<Group> group = game_manager.groups->getKeyData(i);
-        os << (*group);
-        os << "--------------------------" << endl;
-    }
-    os << "--------------------------" << endl;
-    os << "manager is:" << endl;
-    os << "his_0: by num of players_0: " << game_manager.num_level_0 << endl;
-    for(int i = 0; i < game_manager.scale; i++){
-        os << game_manager.hist_scores_0[i] << ", ";
-    }
-
-    os << endl;
-    os << "his_not_0:" << endl;
-    for(int i = 0; i < game_manager.scale; i++){
-        os << game_manager.hist_scores[i] << ", ";
-    }
-    os << endl;
-    os << "dynamic:" << endl;
-    os << game_manager.all_players << endl;
-
-    return os;
-}
-
-

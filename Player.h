@@ -40,12 +40,10 @@ struct keyPlayerLevel{
     }
 
     bool operator<=(const keyPlayerLevel &other) const{
-//        return this->operator<(other) || this->operator==(other);
         return *this < other || *this == other;
     }
 
     bool operator>=(const keyPlayerLevel &other) const{
-//        return this->operator>(other) || this->operator==(other);
         return *this > other || *this == other;
     }
 
@@ -92,12 +90,10 @@ struct keyPlayerScore{
     };
 
     bool operator<=(const keyPlayerScore &other) const{
-//        return this->operator<(other) || this->operator==(other);
         return *this < other || *this == other;
     }
 
     bool operator>=(const keyPlayerScore &other) const{
-//        return this->operator>(other) || this->operator==(other);
         return *this > other || *this == other;
     }
 

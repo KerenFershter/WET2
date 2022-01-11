@@ -5,7 +5,7 @@
 #include "Group.h"
 
 
-Group::Group(int id, int scale) : id(id), scale(scale), num_level_0(0){
+Group::Group(int id, int scale) : id(id), scale(scale), num_level_0(0), player_count(0){
     hist_scores = new int[scale + 1];
     hist_scores_0 = new int[scale + 1];
 
@@ -22,12 +22,13 @@ Group::~Group() {
 
 void Group::addPlayer( Group::ptr_player & player) {
     int score=player->getScore();
-    if(score>scale || score<=0){
+    if(score > scale || score <= 0){
         throw NoSuchScore();
     }
     hist_scores_0[score]++;
     num_level_0++;
     all_players.insert(player->getId(),player);
+    player_count++;
 }
 
 void Group::removePlayer( Group::ptr_player & player) {
@@ -42,6 +43,7 @@ void Group::removePlayer( Group::ptr_player & player) {
         hist_scores[player->getScore()]--;
     }
 
+    player_count--;
 }
 
 bool Group::playerExist( Group::ptr_player& player) {
@@ -55,20 +57,20 @@ void Group::onIncreasePlayerLevel(Group::ptr_player player, int level_increase) 
     if(!player->getLevel()){
         hist_scores_0[player->getScore()]--;
         num_level_0--;
-        player->increaseLevel(level_increase);//TODO: check increased our side
+        player->increaseLevel(level_increase);
         players_by_level.insert(player->getKeyLevel(), player);
         players_by_score.insert(player->getKeyScore(), player);
         hist_scores[player->getScore()]++;
-        player->decreaseLevel(level_increase);/////out side will be done increase
+        player->decreaseLevel(level_increase);
 
     }
     else {
         players_by_level.remove(player->getKeyLevel());
         players_by_score.remove(player->getKeyScore());
-        player->increaseLevel(level_increase);//TODO: check increased out side
+        player->increaseLevel(level_increase);
         players_by_level.insert(player->getKeyLevel(), player);
         players_by_score.insert(player->getKeyScore(), player);
-        player->decreaseLevel(level_increase);/////out side will be done increase
+        player->decreaseLevel(level_increase);
     }
 }
 
@@ -94,7 +96,6 @@ void Group::onChangePlayerScore(Group::ptr_player player, int new_score) {
         hist_scores[new_score]++;
     }
 
-    //tmp->changeScore(new_score);
 }
 
 void Group::merge(Group& other){
@@ -110,6 +111,8 @@ void Group::merge(Group& other){
     this->all_players.merge(other.all_players);
     this->players_by_level.merge(other.players_by_level);
     this->players_by_score.merge(other.players_by_score);
+
+    player_count += other.player_count;
 }
 
 bool Group::getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowerLevel, int higherLevel,
@@ -140,33 +143,12 @@ bool Group::operator==(const Group& other){
     return this->id == other.id;
 }
 
-std::ostream &operator<<(ostream &os, const Group &group) {
-    os << "Group Id:" << group.id << endl;
-    os << "his_0: by num of players_0: " << group.num_level_0 << endl;
-    for(int i = 0; i < group.scale; i++){
-        os << group.hist_scores_0[i] << ", ";
-    }
-    os << endl;
-    os << "his_not_0:" << endl;
-    for(int i = 0; i < group.scale; i++){
-        os << group.hist_scores[i] << ", ";
-    }
-    os << endl;
-    os << "dynamic:" << endl;
-    os << group.all_players << endl;
-    // os<<"avl:"<<endl;
-    // group.players.print();//TODO:print avl
-
-    return os;
-
-}
-
 void Group::_give_id(Group::ptr_player& player, void* new_id) {
     Player::setGroup(*player, (int)(unsigned long)new_id);
 }
 
 int Group::getSize() {
-    return this->all_players.getCount();
+    return this->player_count;
 }
 
 double Group::averageHighestPlayerLevelByGroup(int m) {
