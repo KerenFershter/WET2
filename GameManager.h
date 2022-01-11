@@ -39,11 +39,11 @@ class GameManager {
     AVLTree<keyPlayerLevel> players_by_level;
     AVLTree<keyPlayerScore> players_by_score;
     UnionFind<ptr_group> * groups;
+    int player_count;
 
 public:
     GameManager(int k,int scale);
     ~GameManager();
-    //void* init(int k,int scale);
     StatusType mergeGroups(int GroupID1, int GroupID2);
     StatusType addPlayer(int PlayerID, int GroupID, int score);
     StatusType removePlayer( int PlayerID);
@@ -53,9 +53,8 @@ public:
     StatusType getPercentOfPlayersWithScoreInBounds(int GroupID, int score,
                                                     int lowerLevel, int higherLevel, double * players);
     StatusType averageHighestPlayerLevelByGroup(int groupID, int m, double* avgLevel);
-    StatusType getPlayersBound(int GroupID, int score, int m, int * LowerBoundPlayers, int * HigherBoundPlayers);
-    friend std::ostream& operator<<(std::ostream& os, const GameManager& game_manager);
 
+    StatusType getPlayersBound(int GroupID, int score, int m, int * LowerBoundPlayers, int * HigherBoundPlayers);
 };
 
 

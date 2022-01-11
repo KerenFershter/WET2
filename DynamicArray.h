@@ -28,22 +28,18 @@ template<class T>
 struct Node {
     int key;
     T data;
-    //std::shared_ptr<Node> prev;
     std::shared_ptr<Node> next;
 
     Node() = default;
 
-   // Node(int key, T& data): key(key), data(data), prev(nullptr), next(nullptr){}
    Node(int key, T& data): key(key), data(data), next(nullptr){}
    Node(const Node& other) : key(other.key), data(data.info), next(other.next){}
-    //Node(const Node& other) : key(other.key), data(data.info), prev(other.prev), next(other.next){}
 };
 
 
 ///////////////////////////////////////////
 // class List
 ///////////////////////////////////////////
-
 
 class EmptyList : public std::exception {
 public:
@@ -56,18 +52,14 @@ template<class T>
 class List {
     typedef Node<T> _Node;
 
-//private:
-public: //TODO: private
+private:
     int size;
     std::shared_ptr<_Node> head;
-    //std::shared_ptr<_Node> tail;
 
-//public:
-//    friend std::ostream &operator<<(std::ostream &os, const List<T> &list);
+public:
     List() : size(0), head(nullptr){}
 
     void push(int key, T& data){
-       // std::shared_ptr<_Node> new_node=make_shared<Node<T>>(key, data);
         if(head == nullptr){
             head = make_shared<Node<T>>(key, data);
         }
@@ -80,16 +72,12 @@ public: //TODO: private
     }
 
     void pop(){
-        if(head!= nullptr) {
+        if(head != nullptr) {
             std::shared_ptr<_Node> tmp = head;
             head = head->next;
             tmp.reset();
             this->size--;
         }
-//        } else{
-//            head.reset();
-//            this->size--;
-//        }
     }
 
     void clean(){
@@ -102,7 +90,7 @@ public: //TODO: private
         clean();
     }
 
-    T& find(int key){ //TODO: assert done exist before
+    T& find(int key){
         std::shared_ptr<_Node> iter = head;
         while(iter != nullptr){
             if(iter->key == key){
@@ -191,15 +179,6 @@ public: //TODO: private
         return false;
     }
 
-//    friend std::ostream& operator<<(std::ostream& os, const List<T>& list){
-//        std::shared_ptr<_Node> iter = list.head;
-//        while(iter != nullptr){
-//                os<< "{"<<iter->key<<","<<iter->data<<"}"<<endl;
-//                iter = iter->next;
-//        }
-//        os<<endl;
-//    }
-
     template<typename P>
     void apply(P pred, void* arg){
             std::shared_ptr<_Node> iter = this->head;
@@ -222,26 +201,17 @@ template<class T>
 class DynamicArray {
     typedef List<T> _List;
 
-public: //TODO private
+private:
     int size;
     _List *A;
-//    int *B;
-//    int *C;
-//    T default_val;
     int counter;
 
-//    bool is_initialized(int idx) const {
-//        return (B[idx] < this->counter && B[idx] >= 0 && C[B[idx]] == idx);
-//    }
-
-//public:
+public:
 
     DynamicArray(int init_size=MIN_SIZE){
         size = init_size;
         counter = 0;
         A = new _List[init_size];
-//        B = new int[init_size];
-//        C = new int[init_size];
     }
 
     DynamicArray(DynamicArray &&other) noexcept : DynamicArray()
@@ -269,20 +239,18 @@ public: //TODO private
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const DynamicArray<T>& arr){
-        for(int i = 0; i < arr.size; i++){
-            os << i <<":"<< endl;
-            std::shared_ptr< Node<T>> iter = arr.A[i].head;
-            while(iter != nullptr){
-             //   os<< "{"<<iter->key<<","<<iter->data<<"}"<<endl;
-                os<< "{"<<iter->key<<"}"<<endl;
-                iter = iter->next;
-            }
-            os<<endl;
-        //    os << arr.A[i] << ",\t";
-        }
-        return os;
-    }
+//    friend std::ostream& operator<<(std::ostream& os, const DynamicArray<T>& arr){
+//        for(int i = 0; i < arr.size; i++){
+//            os << i << ":" << endl;
+//            std::shared_ptr< Node<T>> iter = arr.A[i].head;
+//            while(iter != nullptr){
+//                os << "{" << iter->key << "}" << endl;
+//                iter = iter->next;
+//            }
+//            os << endl;
+//        }
+//        return os;
+//    }
 };
 
 
@@ -298,20 +266,12 @@ void DynamicArray<T>::clean(){
     }
 
     delete [] A;
-//        delete[] B;
-//        delete[] C;
-//        delete default_val;
 }
 
 template<class T>
 void DynamicArray<T>::insert(int key, T val){
     int idx = key % this->size;
     counter++;
-//    if(!is_initialized(idx)){
-//        this->C[this->counter] = idx;
-//        this->B[idx] = this->counter;
-//        this->counter++;
-//    }
     A[idx].push(key, val);
     if(counter == size * OM){
         this->resize(OM);
@@ -326,17 +286,13 @@ void DynamicArray<T>::remove(int key) {
         counter--;
     }
     if (counter <= size / OM){
-       // float new_size=1/OM;
-        resize(0.5);
+        resize(1.0 / (float)OM);
     }
 }
 
 template<class T>
 bool DynamicArray<T>::exists(int key){
-    int idx= key % this->size;
-//    if(!is_initialized(idx)){
-//        return false;
-//    }
+    int idx = key % this->size;
     return A[idx].exists(key);
 }
 
@@ -356,10 +312,7 @@ void DynamicArray<T>::resize(float factor){
     int tmp_size = size;
     A = new _List[new_size];
     this->size = new_size;
-//    delete[] this->B;
-//    delete[] this->C;
-//    this->B = new int[new_size];
-//    this->C = new int[new_size];
+
     int tmpKey;
     T tmpData;
     counter = 0;
@@ -385,19 +338,12 @@ void DynamicArray<T>::merge(DynamicArray<T>& other){
             list_i->pop();
         }
     }
-
-    //other.clean();
 }
 
 template<class T>
 int DynamicArray<T>::getCount() {
     return this->counter;
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 #endif //DYNAMICARRAY_H
