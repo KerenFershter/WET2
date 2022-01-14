@@ -4,7 +4,7 @@ project(Wet2)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Wet2
-        main.cpp
+        main2.cpp
         library2.cpp
         Player.cpp
         Group.cpp

@@ -1,9 +1,18 @@
-//
-// Created by keren on 03/01/2022.
-//
+/****************************************************************************/
+/*                                                                          */
+/* This file contains the interface functions                               */
+/* you should use for the wet ex 2                                          */
+/*                                                                          */
+/****************************************************************************/
 
-#ifndef WET2_LIBRARY2_H
-#define WET2_LIBRARY2_H
+/****************************************************************************/
+/*                                                                          */
+/* File Name : library.h                                                   */
+/*                                                                          */
+/****************************************************************************/
+
+#ifndef _234218_WET2
+#define _234218_WET2
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,4 +54,4 @@ void Quit(void** DS);
 }
 #endif
 
-#endif //WET2_LIBRARY2_H
+#endif    /*_234218_WET2 */
