@@ -175,13 +175,15 @@ StatusType GameManager::getPercentOfPlayersWithScoreInBounds(int GroupID, int sc
     if(GroupID < 0 || GroupID > k){
         return INVALID_INPUT;
     }
-    if(lowerLevel>higherLevel){
+
+    if(lowerLevel > higherLevel){
         return FAILURE;
     }
-    if(score <= 0 || score > scale){
-        *players = 0;
-        return SUCCESS;
-    }
+
+//    if(score <= 0 || score > scale){
+//        *players = 0;
+//        return SUCCESS;
+//    }
 
 
     if(GroupID){
@@ -199,9 +201,12 @@ StatusType GameManager::getPercentOfPlayersWithScoreInBounds(int GroupID, int sc
     int range_level = players_by_level.rangeCount(min_tmp_level, max_tmp_level);
 
     if(lowerLevel == 0){
-        range_score += hist_scores_0[score];
+        if(score > 0 && score <= scale){
+            range_score += hist_scores_0[score];
+        }
         range_level += num_level_0;
     }
+
     if(range_level <= 0){
         return FAILURE;
     }

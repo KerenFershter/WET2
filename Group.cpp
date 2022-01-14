@@ -127,7 +127,9 @@ bool Group::getPercentOfPlayersWithScoreInBounds(int max_id, int score, int lowe
     int range_level = players_by_level.rangeCount(min_tmp_level, max_tmp_level);
 
     if(lowerLevel == 0){
-        range_score += hist_scores_0[score];
+        if(score > 0 && score <= scale){
+            range_score += hist_scores_0[score];
+        }
         range_level += num_level_0;
     }
 
